@@ -53,6 +53,8 @@ namespace SheetData
             _assemblies = new();
             //Find Unity Type ->  asd 
             
+            
+            //6.8 이후 CoreCLR 사용시 UnityEngine.Assemblies.CurrentAssemblies로 대체
             var assemblies = AppDomain.CurrentDomain.GetAssemblies();
             foreach (var assembly in assemblies)
             {
