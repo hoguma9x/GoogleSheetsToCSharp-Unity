@@ -1,6 +1,6 @@
 [English](README.md) | [한국어](README.ko.md) | [日本語](README.jp.md)
 
-# GSheet (GoogleSheet to Data)
+# GSheet (Google Sheets to strongly-typed C# data pipeline for Unity)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 ![.NET Standard 2.1](https://img.shields.io/badge/.NET%20Standard-2.1-orange)
