@@ -22,8 +22,9 @@ Google Sheets를 기반으로 기획 데이터를 관리하고 이를 Unity 연�
     - DirectMemoryCopy 메커니즘 기반의 직렬화 라이브러리를 사용해서 데이터 용량과 로드속도 비약적 개선
 3. __UnityDOTS 지원__
    - ECS 아키텍처를 위한 `NativeContainer`, `FixedString` 등의 형식 지원
-4. __List/Dictionary/struct/class 에 대한 선택지 제공__
-   - GoogleSheet 데이터를 구성할때 위 키워드에 대한 설정가능
+4. __List/Dictionary/struct/class/external에 대한 선택지 제공__
+   - GoogleSheet 데이터를 구성할 때 위 키워드 설정 가능
+   - `external`을 사용하면 시트 타입 선언을 생성하지 않고 기존 타입을 사용
 5. __넓은 확장성__
    - 배열형식 또는 사용자 정의 타입(CustomType) 지원
    - `IGSheetParser` 인터페이스를 적용한 모든 타입 사용가능
@@ -51,7 +52,22 @@ Google Sheets를 기반으로 기획 데이터를 관리하고 이를 Unity 연�
 
 ### 1. A1 셀에 타입 키워드 작성
 각 시트의 A1 셀에는 생성할 타입 종류를 적습니다.
-이 값은 생성되는 시트 타입의 `class` / `struct` 키워드로 사용됩니다.
+
+| 값 | 동작 |
+| --- | --- |
+| `class` | 시트 타입을 partial class로 생성합니다. |
+| `struct` | 시트 타입을 partial struct로 생성합니다. |
+| `external` | 시트 타입 생성을 건너뛰고 기존 외부 타입을 사용합니다. |
+
+`external`은 C# 타입 키워드가 아니라 생성 지시자입니다. 시트의 바이너리 데이터와 `Gsheet` 컬렉션은 계속 생성되지만 `{시트 이름}.cs`는 생성하지 않습니다. 생성 코드의 네임스페이스에 시트 이름과 같은 public 타입을 미리 정의해야 합니다. 이 타입은 `ILwSerializable`과 `IDisposable`을 구현해야 하며, class라면 public 매개변수 없는 생성자도 필요합니다. 직렬화 순서와 타입은 B1 이후에 선언한 컬럼과 일치해야 합니다.
+
+예를 들어 `Unit` 시트에서 기존 `Unit` 타입을 사용하려면 A1에 `external`을 작성합니다.
+
+| external | string name | int hp |
+| --- | --- | --- |
+| unit_100 | Soldier | 100 |
+
+Generate를 실행하면 `Unit.cs`를 생성하지 않고 `Gsheet.Unit`에서 기존 `Unit` 타입을 사용합니다.
 
 
 ### 2. 첫 행에 타입과 변수명 작성

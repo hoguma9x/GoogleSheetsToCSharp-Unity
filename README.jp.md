@@ -22,8 +22,9 @@ Google スプレッドシートをベースに企画データを管理し、Unit
     - DirectMemoryCopy メカニズムベースのシリアライズライブラリを使用し、データ容量とロード速度を大幅に改善
 3. __UnityDOTS サポート__
    - ECS アーキテクチャ向けの `NativeContainer`・`FixedString` などの形式をサポート
-4. __List / Dictionary / struct / class の選択肢提供__
+4. __List / Dictionary / struct / class / external の選択肢提供__
    - Google スプレッドシートのデータを構成する際、上記キーワードを設定可能
+   - `external` を使用すると、シート型の宣言を生成せず既存の型を使用
 5. __高い拡張性__
    - 配列形式またはユーザー定義型（CustomType）をサポート
    - `IGSheetParser` インターフェースを適用したすべての型が使用可能
@@ -51,7 +52,22 @@ Google スプレッドシートをベースに企画データを管理し、Unit
 
 ### 1. A1 セルに型キーワードを記述
 各シートの A1 セルには、生成する型の種類を記述します。
-この値は生成されるシート型の `class` / `struct` キーワードとして使用されます。
+
+| 値 | 動作 |
+| --- | --- |
+| `class` | シート型を partial class として生成します。 |
+| `struct` | シート型を partial struct として生成します。 |
+| `external` | シート型の生成をスキップし、既存の外部型を使用します。 |
+
+`external` は C# の型キーワードではなく、生成指示です。シートのバイナリデータと `Gsheet` コレクションは引き続き生成されますが、`{シート名}.cs` は生成されません。生成コードの名前空間に、シート名と同名の public 型をあらかじめ定義してください。この型は `ILwSerializable` と `IDisposable` を実装する必要があり、class の場合は public な引数なしコンストラクターも必要です。シリアライズの順序と型は、B1 以降で宣言したカラムと一致させてください。
+
+たとえば `Unit` シートで既存の `Unit` 型を使用する場合は、A1 に `external` を記述します。
+
+| external | string name | int hp |
+| --- | --- | --- |
+| unit_100 | Soldier | 100 |
+
+Generate を実行すると、`Unit.cs` を生成せず、`Gsheet.Unit` で既存の `Unit` 型を使用します。
 
 ### 2. 先頭行に型と変数名を記述
 先頭行の各カラムには、以下の形式でフィールドを宣言します。

@@ -48,7 +48,9 @@ namespace SheetData.Editor.Generator
                 writer.Write(sheetDatas.Count);
                 foreach (var sheetData in sheetDatas)
                 {
-                    modelMap.Add(sheetData.SheetName, sheetData.ClassGenerator(target.GeneratorNameSpace));
+                    if(sheetData.HasGeneratorSheetType())
+                        modelMap.Add(sheetData.SheetName, sheetData.ClassGenerator(target.GeneratorNameSpace));
+                   
                     sheetData.WriteDirect(writer, modelMap[sheetData.SheetName]);
                     if (sheetData.SheetName == target.LocalizeSetting.SheetName)
                     {

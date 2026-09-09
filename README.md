@@ -22,8 +22,9 @@ This plugin was developed to consolidate the core features required in real live
     - Uses a DirectMemoryCopy-based serialization library to dramatically reduce data size and improve load speed.
 3. __Unity DOTS Support__
    - Supports formats such as `NativeContainer` and `FixedString` for ECS architecture.
-4. __List / Dictionary / struct / class Options__
+4. __List / Dictionary / struct / class / external Options__
    - These keywords can be configured when structuring Google Sheet data.
+   - `external` uses an existing type without generating a sheet type declaration.
 5. __High Extensibility__
    - Supports array types and user-defined types (CustomType).
    - Any type implementing the `IGSheetParser` interface can be used.
@@ -51,7 +52,22 @@ If `Code Generation Path` in the settings asset is `Scripts/Generator`, the name
 
 ### 1. Write the Type Keyword in Cell A1
 In cell A1 of each sheet, write the type to be generated.
-This value is used as the `class` / `struct` keyword for the generated sheet type.
+
+| Value | Behavior |
+| --- | --- |
+| `class` | Generates the sheet type as a partial class. |
+| `struct` | Generates the sheet type as a partial struct. |
+| `external` | Skips generation of the sheet type and uses an existing external type. |
+
+`external` is a generation directive, not a C# type keyword. The sheet's binary data and its `Gsheet` collection are still generated, but `{SheetName}.cs` is not. Define a public type whose name matches the sheet name in the generated-code namespace. The type must implement `ILwSerializable` and `IDisposable`; classes also need a public parameterless constructor. Its serialization order and types must match the columns declared from B1 onward.
+
+For example, a sheet named `Unit` can use an existing `Unit` type by writing `external` in A1:
+
+| external | string name | int hp |
+| --- | --- | --- |
+| unit_100 | Soldier | 100 |
+
+After generation, `Gsheet.Unit` uses the existing `Unit` type without generating `Unit.cs`.
 
 ### 2. Write Types and Variable Names in the First Row
 Declare fields in each column of the first row using the following format.

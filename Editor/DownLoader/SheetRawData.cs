@@ -49,6 +49,11 @@ namespace SheetData.Editor.DownLoader
             RefreshHeaderRowType();
             _sheetInfo = _sheetInfo.UpdateInfo(_rows.Count - 1, IsDictionary());
         }
+
+        public bool HasGeneratorSheetType()
+        {
+            return TypeKeyword != "external";
+        }
         
         public bool IsDictionary()
         {
