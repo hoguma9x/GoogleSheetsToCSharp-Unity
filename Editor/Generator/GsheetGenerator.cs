@@ -48,10 +48,9 @@ namespace SheetData.Editor.Generator
                 writer.Write(sheetDatas.Count);
                 foreach (var sheetData in sheetDatas)
                 {
-                    if(sheetData.HasGeneratorSheetType())
+                    if (!sheetData.IsExternalSheet())
                         modelMap.Add(sheetData.SheetName, sheetData.ClassGenerator(target.GeneratorNameSpace));
-                   
-                    sheetData.WriteDirect(writer, modelMap[sheetData.SheetName]);
+                    sheetData.WriteDirect(writer);
                     if (sheetData.SheetName == target.LocalizeSetting.SheetName)
                     {
                         target.LocalizeSetting.LanguageCodes =
@@ -68,6 +67,8 @@ namespace SheetData.Editor.Generator
                 EditorUtility.DisplayProgressBar(ProgressTitle, "Generating Cshape Script", 0.9f);
                 foreach (var sheetData in sheetDatas)
                 {
+                    if(sheetData.IsExternalSheet())
+                        continue;
                     var generatorCode = modelMap[sheetData.SheetName].Generator();
                     if (generatorCode != "")
                     {

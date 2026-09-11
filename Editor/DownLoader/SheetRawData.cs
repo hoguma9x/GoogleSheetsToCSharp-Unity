@@ -50,9 +50,9 @@ namespace SheetData.Editor.DownLoader
             _sheetInfo = _sheetInfo.UpdateInfo(_rows.Count - 1, IsDictionary());
         }
 
-        public bool HasGeneratorSheetType()
+        public bool IsExternalSheet()
         {
-            return TypeKeyword != "external";
+            return TypeKeyword == "external";
         }
         
         public bool IsDictionary()
@@ -88,7 +88,7 @@ namespace SheetData.Editor.DownLoader
             return new TypeModel(this, nameSpace);
         }
 
-        public void WriteDirect(SheetBinaryWriter writer, TypeModel model)
+        public void WriteDirect(SheetBinaryWriter writer)
         {
             writer.Write(_sheetInfo);
             for (int i = 1; i < _rows.Count; i++)
@@ -104,7 +104,6 @@ namespace SheetData.Editor.DownLoader
             }
             writer.WritePadding(32);
         }
-
 
         #region private
         void RefreshHeaderRowType()
