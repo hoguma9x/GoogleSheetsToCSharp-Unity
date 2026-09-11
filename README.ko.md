@@ -10,6 +10,10 @@ GSheet는 Google Sheets에 작성한 기획 데이터를 Unity에서 바로 사�
 구글시트에서 작업한 데이터는 에디터와 런타임 모두 사용가능합니다
 다운로드 된 데이터는 자동으로 타입을 생성시켜줘 Gsheet.Instance를 통해 값에 접근할 수 있습니다.
 
+## 필수 의존성
+
+GSheet를 사용하려면 [LWSerializer](https://github.com/hoguma9x/LWSerializer.git)가 반드시 필요합니다. GSheet를 사용하기 전에 Unity 프로젝트에 LWSerializer를 설치해야 합니다. LWSerializer가 없으면 GSheet가 컴파일되지 않으며, 시트 데이터 생성과 생성된 데이터 로드가 정상적으로 동작하지 않습니다.
+
 ## 제작이유
 Google Sheets를 기반으로 기획 데이터를 관리하고 이를 Unity 연동하는 파이프라인은 업계에서 매우 보편적입니다. 
 그러나 공식적으로 제공하는 플러그인의 부재로 인해 프로젝트마다 구현 방식이 상이하고 기능적 한계가 존재했습니다. 

@@ -10,6 +10,10 @@ GSheet is a plugin that converts game design data written in Google Sheets into 
 Data created in Google Sheets can be used in both the Editor and at runtime.
 Downloaded data automatically generates types, allowing you to access values via `Gsheet.Instance`.
 
+## Required Dependency
+
+GSheet requires [LWSerializer](https://github.com/hoguma9x/LWSerializer.git). Install LWSerializer in the Unity project before using GSheet. GSheet cannot compile, generate sheet data, or load generated data correctly without it.
+
 ## Motivation
 Managing game design data in Google Sheets and integrating it with Unity is a very common pipeline in the industry.
 However, due to the lack of an official plugin, each project had a different implementation with varying functional limitations.

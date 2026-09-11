@@ -7,6 +7,10 @@ description: Unity GSheet 플러그인의 시트 스키마 설계, 설정, C# �
 
 [README.md](README.md)와 [README.ko.md](README.ko.md)를 기반으로 한다. 아래의 `Assets/...`는 이 플러그인 폴더가 아니라 사용하는 Unity 프로젝트 루트를 기준으로 한다. 문서의 샘플 이름을 프로젝트에 존재하는 API로 가정하지 않는다.
 
+## 필수 의존성
+
+GSheet는 [LWSerializer](https://github.com/hoguma9x/LWSerializer.git)를 필수로 사용한다. LWSerializer가 없으면 GSheet가 컴파일되지 않으며 시트 데이터 생성과 생성 데이터 로드도 정상 동작하지 않는다. GSheet 관련 작업을 시작하기 전에 Unity 프로젝트에 LWSerializer가 설치되어 있고 참조가 정상적으로 해석되는지 확인한다.
+
 ## 작업 시작
 
 1. 사용하는 Unity 프로젝트와 GSheet 설치 위치를 확인한다.
