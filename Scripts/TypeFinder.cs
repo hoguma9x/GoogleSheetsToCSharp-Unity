@@ -52,27 +52,25 @@ namespace Gsheets
         {
             _assemblies = new();
             //Find Unity Type ->  asd 
-
-            string testString = "";
             //6.8 이후 CoreCLR 사용시 UnityEngine.Assemblies.CurrentAssemblies로 대체
             var assemblies = AppDomain.CurrentDomain.GetAssemblies();
             foreach (var assembly in assemblies)
             {
-                if (!assembly.IsDynamic)
-                {
-                    string sheet = nameof(Gsheets);
-                    string sheetEdit = $"{sheet}.Editor";
-                    testString += assembly.Location + "\n";
-                    bool isTarget = assembly.Location.Contains("Assets") ||
-                                    assembly.Location.Contains("Assembly-CSharp") ||
-                                    assembly.Location.Contains("Unity.Collections") ||
-                                    assembly.Location.Contains(sheet) ||
-                                    assembly.Location.Contains(sheetEdit);
-                    if (isTarget)
-                        _assemblies.Add(assembly);
-                }  
+                if (assembly.IsDynamic)
+                    continue;
+                //var fullname = assembly.FullName;
+                //var location = assembly.Location;
+                var targetStr = assembly.Location;
+                bool isCustomLibrary = targetStr.Contains("Library") && !(targetStr.Contains("Unity") || targetStr.Contains("unity"));
+                bool isTarget = targetStr.Contains("Assets") ||
+                                isCustomLibrary ||
+                                targetStr.Contains("Assembly-CSharp") ||
+                                targetStr.Contains("Unity.Collections") ||
+                                targetStr.Contains($"{nameof(Gsheets)}") ||
+                                targetStr.Contains($"{nameof(Gsheets)}.Editor");
+                if (isTarget)
+                    _assemblies.Add(assembly);
             }
-            Debug.Log(testString);
             
         }
         
