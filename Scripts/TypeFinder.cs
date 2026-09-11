@@ -52,8 +52,8 @@ namespace Gsheets
         {
             _assemblies = new();
             //Find Unity Type ->  asd 
-            
-            
+
+            string testString = "";
             //6.8 이후 CoreCLR 사용시 UnityEngine.Assemblies.CurrentAssemblies로 대체
             var assemblies = AppDomain.CurrentDomain.GetAssemblies();
             foreach (var assembly in assemblies)
@@ -62,6 +62,7 @@ namespace Gsheets
                 {
                     string sheet = nameof(Gsheets);
                     string sheetEdit = $"{sheet}.Editor";
+                    testString += assembly.Location + "\n";
                     bool isTarget = assembly.Location.Contains("Assets") ||
                                     assembly.Location.Contains("Assembly-CSharp") ||
                                     assembly.Location.Contains("Unity.Collections") ||
@@ -71,6 +72,8 @@ namespace Gsheets
                         _assemblies.Add(assembly);
                 }  
             }
+            Debug.Log(testString);
+            
         }
         
         public static Type Find(string typeName)
