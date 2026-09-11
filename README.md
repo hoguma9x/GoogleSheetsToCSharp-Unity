@@ -14,6 +14,8 @@ Downloaded data automatically generates types, allowing you to access values via
 
 GSheet requires [LWSerializer](https://github.com/hoguma9x/LWSerializer.git). Install LWSerializer in the Unity project before using GSheet. GSheet cannot compile, generate sheet data, or load generated data correctly without it.
 
+For Unity, add the following Git URL through the Unity Package Manager (UPM): [https://github.com/hoguma9x/LWSerializer.git](https://github.com/hoguma9x/LWSerializer.git)
+
 ## Motivation
 Managing game design data in Google Sheets and integrating it with Unity is a very common pipeline in the industry.
 However, due to the lack of an official plugin, each project had a different implementation with varying functional limitations.

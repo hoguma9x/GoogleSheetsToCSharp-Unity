@@ -14,6 +14,8 @@ Google スプレッドシートで作業したデータはエディタとラン�
 
 GSheet を使用するには [LWSerializer](https://github.com/hoguma9x/LWSerializer.git) が必須です。GSheet を使用する前に、Unity プロジェクトへ LWSerializer をインストールしてください。LWSerializer がない場合、GSheet はコンパイルできず、シートデータの生成および生成済みデータの読み込みも正常に動作しません。
 
+Unity の場合は、Unity Package Manager（UPM）に次の Git URL を追加してください：[https://github.com/hoguma9x/LWSerializer.git](https://github.com/hoguma9x/LWSerializer.git)
+
 ## 制作理由
 Google スプレッドシートをベースに企画データを管理し、Unity と連携するパイプラインは業界で非常に一般的です。
 しかし公式プラグインが存在しないため、プロジェクトごとに実装方法が異なり、機能的な限界がありました。
