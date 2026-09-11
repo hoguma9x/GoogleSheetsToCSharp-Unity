@@ -2,17 +2,17 @@
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using SheetData.IO;
+using Gsheets.IO;
 using Unity.Plastic.Newtonsoft.Json;
 using Unity.Plastic.Newtonsoft.Json.Linq;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace SheetData.Editor.DownLoader
+namespace Gsheets.Editor.DownLoader
 {
     internal class SheetLoader
     {
-        public static async Task<SheetRawData> Load(string sheetID, SheetInfo sheetinfo)
+        public static async Task<SheetRawData> Load(string sheetID, GSheetInfo sheetinfo)
         {
             // 1. 요청할 URL 생성
             //string targetUrl =  $"https://docs.google.com/spreadsheets/d/{sheetID}/export?format=csv&sheet={sheetName}";
@@ -39,9 +39,9 @@ namespace SheetData.Editor.DownLoader
         /// </summary>
         /// <param name="sheetID"></param>
         /// <returns></returns>
-        internal static async Task<List<SheetInfo>> GetSheetNames(string sheetID)
+        internal static async Task<List<GSheetInfo>> GetSheetNames(string sheetID)
         {
-            List<SheetInfo> result = new();
+            List<GSheetInfo> result = new();
             string accessUrl = $"https://docs.google.com/spreadsheets/d/{sheetID}/edit";
             using (UnityWebRequest webRequest = UnityWebRequest.Get(accessUrl))
             {
@@ -66,7 +66,7 @@ namespace SheetData.Editor.DownLoader
                     // 매칭 실행
                     Match matchId = Regex.Match(block, patternId);
                     Match matchName = Regex.Match(block, patternName);
-                    result.Add(new SheetInfo(matchName.Groups[1].Value.Replace("\\", ""),
+                    result.Add(new GSheetInfo(matchName.Groups[1].Value.Replace("\\", ""),
                         matchId.Groups[1].Value.Replace("\\", "")));
                 }
             }

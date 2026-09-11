@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Globalization;
+using Gsheets.IO;
 using UnityEngine;
-using Gsheets.Internal.LWSerializer;
-using SheetData.IO;
 
-namespace SheetData.Scripts.Parsing
+namespace Gsheets.Parsing
 {
     [ParserTrigger(typeof(Vector2))]
     public class Format_Vector2 : IParserFormatter
@@ -18,7 +17,7 @@ namespace SheetData.Scripts.Parsing
             return new Vector2(x, y);
         }
 
-        public void Write(string content, SheetBinaryWriter writer)
+        public void Write(string content, GSheetBinaryWriter writer)
         {
             writer.Write((Vector2)ToData(content));
         }
@@ -38,7 +37,7 @@ namespace SheetData.Scripts.Parsing
             return new Vector3(x, y, z);
         }
         
-        public void Write(string content, SheetBinaryWriter writer)
+        public void Write(string content, GSheetBinaryWriter writer)
         {
             writer.Write((Vector3)ToData(content));
         }
@@ -56,7 +55,7 @@ namespace SheetData.Scripts.Parsing
             return new Vector2Int(x, y);
         }
         
-        public void Write(string content, SheetBinaryWriter writer)
+        public void Write(string content, GSheetBinaryWriter writer)
         {
             writer.Write((Vector2Int)ToData(content));    
         }
@@ -77,7 +76,7 @@ namespace SheetData.Scripts.Parsing
             return new Vector3Int(x, y, z);
         }
         
-        public void Write(string content, SheetBinaryWriter writer)
+        public void Write(string content, GSheetBinaryWriter writer)
         {
             writer.Write((Vector3Int)ToData(content));
         }
@@ -92,7 +91,7 @@ namespace SheetData.Scripts.Parsing
             return color;
         }
 
-        public void Write(string content, SheetBinaryWriter writer)
+        public void Write(string content, GSheetBinaryWriter writer)
         {
             writer.Write((Color)ToData(content));
         }

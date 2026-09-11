@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Gsheets.Internal.Scriban;
-using SheetData.Editor.DownLoader;
+using Gsheets.Editor.DownLoader;
+using Scriban;
 
-namespace SheetData.Editor.Generator
+namespace Gsheets.Editor.Generator
 {
     ////싱글톤으로 만들어주세요
     public class GSheetModel
     {
-        private static readonly Template TEMPLATE = Template.Parse(SheetDataTemplate.Template_Class);
+        private static readonly Template TEMPLATE = Template.Parse(GSheetTemplate.Template_Class);
         public const string NAME = "Gsheet";
         public string NamespaceName { get; set; }
         public List<string> Usings { get; set; }
@@ -49,14 +49,14 @@ namespace SheetData.Editor.Generator
         }
     }
     
-    public class SheetDataTemplate
+    public class GSheetTemplate
     {
         public const string Template_Class = @"using System;
 using UnityEngine;
 using System.Collections.Generic;
-using Gsheets.Internal.LWSerializer;
-using SheetData.IO;
-using SheetData;
+using Gsheets.IO;
+using Gsheets;
+using LWSerializer;
 {{~ for us in usings ~}}
 using {{ us }};
 {{~ end ~}}
@@ -82,7 +82,7 @@ namespace {{ namespace_name }}
                     _instance = new {{ class_name }}();
                     _instance.Load();
                     _instance.Initialize();
-                    SheetDataSettingScriptable.Instance.GsheetReLoadFunc = _instance.Load;
+                    GSheetSettingScriptable.Instance.GsheetReLoadFunc = _instance.Load;
                 }
                 return _instance;
             }
@@ -101,14 +101,14 @@ namespace {{ namespace_name }}
             Dispose();
 
             //Read Gsheet Binary
-            SheetBinaryReader reader = SheetBinaryReader.Create(SheetDataSettingScriptable.BinaryFileName);
+            GSheetBinaryReader reader = GSheetBinaryReader.Create(GSheetSettingScriptable.BinaryFileName);
             if(reader == null)
                 return;
             
             //Read Data
             reader.Read(out int sheetCount);
             {{~ for prop in members ~}}
-            _{{ prop.name }} = SheetDataHelper.ReadSheet<{{ prop.type }}>(reader);
+            _{{ prop.name }} = GSheetHelper.ReadSheet<{{ prop.type }}>(reader);
             {{~ end ~}}
             reader.Dispose();
         }

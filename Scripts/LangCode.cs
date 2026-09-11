@@ -1,4 +1,4 @@
-namespace SheetData
+namespace Gsheets
  {
      public enum LangCode
      {

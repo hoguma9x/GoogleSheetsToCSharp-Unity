@@ -1,8 +1,8 @@
 ﻿using System;
-using Gsheets.Internal.LWSerializer;
-using SheetData.IO;
+using Gsheets.IO;
+using LWSerializer;
 
-namespace SheetData.Scripts.Parsing
+namespace Gsheets.Parsing
 {
     /// <summary>
     /// 이 어트리뷰트가 선언된 구조체는 어트리뷰트에 명시된 타입이 LwSerializer에서 파싱될때 사용됩니다.
@@ -18,7 +18,7 @@ namespace SheetData.Scripts.Parsing
     public interface IParserFormatter
     {
         public object ToData(string content);
-        public void Write(string content, SheetBinaryWriter writer);
+        public void Write(string content, GSheetBinaryWriter writer);
     }
 
     

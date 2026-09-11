@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using Localize.Elements;
 
-namespace SheetData.Localize
+namespace Gsheets.Localize
 {
     /// <summary>
     /// 자동으로 생성된 Gsheet의 로컬라이징 데이터를 찾아 로컬라이징 데이터로 활용할수있게 합니다.
@@ -25,7 +25,7 @@ namespace SheetData.Localize
             if (_gsheetInstance == null)
             {
                 _langPropertyAccessor = new();
-                var gsheetData = SheetDataSettingScriptable.Instance;
+                var gsheetData = GSheetSettingScriptable.Instance;
                 if (string.IsNullOrEmpty(gsheetData.LocalizeSetting.SheetName))
                 {
                     _gsheetInstance = null;
@@ -36,7 +36,7 @@ namespace SheetData.Localize
                     if (_gsheetInstance == null)
                         return false;
                     _gsheetLocalizeDictionaryField = gsheetData.GSheetType.GetProperty(gsheetData.LocalizeSetting.SheetName);
-                    var localizeType = Type.GetType($"{gsheetData.GeneratorNameSpace}.{gsheetData.LocalizeSetting.SheetName}, {SheetDataSettingScriptable.GeneratorAssemblyName}");
+                    var localizeType = Type.GetType($"{gsheetData.GeneratorNameSpace}.{gsheetData.LocalizeSetting.SheetName}, {GSheetSettingScriptable.GeneratorAssemblyName}");
                     var allProperties = localizeType.GetProperties();
                     EnumCache<LangCode> langCodeCache = new EnumCache<LangCode>();
                     foreach (var property in allProperties)

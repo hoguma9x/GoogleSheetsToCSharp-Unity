@@ -1,9 +1,9 @@
-﻿using Localize.Elements;
-using SheetData.Localize;
+﻿using Gsheets.Localize;
+using Localize.Elements;
 using TMPro;
 using UnityEngine;
 
-namespace SheetData.SheetData
+namespace Gsheets.SheetData
 {
     public class TextMeshProLocalizeUGUI : TextMeshProUGUI, ILocalizeListener
     {

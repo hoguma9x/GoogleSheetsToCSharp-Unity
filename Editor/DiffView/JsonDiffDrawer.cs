@@ -3,7 +3,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Text;
 
-namespace SheetData.Editor.DiffView
+namespace Gsheets.Editor.DiffView
 {
     public static class JsonDiffDrawer
     {

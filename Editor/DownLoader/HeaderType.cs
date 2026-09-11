@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Linq;
-using Gsheets.Internal.LWSerializer;
-using SheetData.Editor.Generator;
+using LWSerializer;
+using Gsheets.Editor.Generator;
 using Unity.Collections;
 
-namespace SheetData.Editor.DownLoader
+namespace Gsheets.Editor.DownLoader
 {
     public class HeaderType
     {

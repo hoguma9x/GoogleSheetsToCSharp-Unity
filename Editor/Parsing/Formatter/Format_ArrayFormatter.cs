@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using SheetData.IO;
+using Gsheets.IO;
 
-namespace SheetData.Scripts.Parsing
+namespace Gsheets.Parsing
 {
     /// <summary>
     /// 모든 배열을 포매팅해줌
@@ -24,7 +24,7 @@ namespace SheetData.Scripts.Parsing
             return newArray;
         }
 
-        public void Write(string content, SheetBinaryWriter writer)
+        public void Write(string content, GSheetBinaryWriter writer)
         {
             writer.Write((T[])ToData(content));
         }

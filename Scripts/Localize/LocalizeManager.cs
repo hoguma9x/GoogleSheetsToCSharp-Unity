@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
+using Gsheets.SheetData;
 using Localize.Elements;
-using SheetData.SheetData;
 using TMPro;
 
-namespace SheetData.Localize
+namespace Gsheets.Localize
 {
     public class LocalizeManager : NativeSingleton<LocalizeManager>
     {
@@ -17,7 +17,7 @@ namespace SheetData.Localize
             base.OnCreateInstance();
             _listeners = new();
             _fontDic = new();
-            foreach (var set in SheetDataSettingScriptable.Instance.LocalizeSetting.FontSets)
+            foreach (var set in GSheetSettingScriptable.Instance.LocalizeSetting.FontSets)
                 _fontDic.Add(set.Mode, set.Font);
         }
 

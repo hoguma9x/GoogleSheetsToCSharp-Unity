@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace SheetData.Scripts.Parsing
+namespace Gsheets.Parsing
 {
     public class StringArray
     {

@@ -1,9 +1,9 @@
 ﻿using System;
-using Gsheets.Internal.LWSerializer;
+using LWSerializer;
 
-namespace SheetData.IO
+namespace Gsheets.IO
 {
-    public struct SheetInfo : ILwSerializable
+    public struct GSheetInfo : ILwSerializable
     {
         private string _sheetName;
         private string _gid;
@@ -15,7 +15,7 @@ namespace SheetData.IO
         public int DataCount => _dataCount;
         public bool IsDictionary => _isDictionary;
         
-        public SheetInfo(string sheetName, string gid)
+        public GSheetInfo(string sheetName, string gid)
         {
             _sheetName = sheetName;
             _gid = gid;
@@ -23,7 +23,7 @@ namespace SheetData.IO
             _isDictionary = false;
         }
 
-        public SheetInfo UpdateInfo(int rowCount, bool isDictionary)
+        public GSheetInfo UpdateInfo(int rowCount, bool isDictionary)
         {
             _dataCount = rowCount;
             _isDictionary = isDictionary;

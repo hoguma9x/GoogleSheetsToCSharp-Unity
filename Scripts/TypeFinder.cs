@@ -5,7 +5,7 @@ using Unity.Collections;
 using UnityEngine;
 using Assembly = System.Reflection.Assembly;
 
-namespace SheetData
+namespace Gsheets
 {
     public static class TypeFinder
     {
@@ -60,7 +60,7 @@ namespace SheetData
             {
                 if (!assembly.IsDynamic)
                 {
-                    string sheet = nameof(SheetData);
+                    string sheet = nameof(Gsheets);
                     string sheetEdit = $"{sheet}.Editor";
                     bool isTarget = assembly.Location.Contains("Assets") ||
                                     assembly.Location.Contains("Assembly-CSharp") ||

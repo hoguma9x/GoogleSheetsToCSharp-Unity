@@ -1,5 +1,5 @@
 ﻿using System;
-using SheetData.Localize;
+using Gsheets.Localize;
 using UnityEngine;
 
 namespace Localize.Elements

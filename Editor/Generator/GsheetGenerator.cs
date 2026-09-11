@@ -4,27 +4,26 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Gsheets.Internal.LWSerializer;
-using SheetData.Editor.DiffView;
-using SheetData.Editor.DownLoader;
-using SheetData.Editor.Utils;
-using SheetData.IO;
+using Gsheets.Editor.DiffView;
+using Gsheets.Editor.DownLoader;
+using Gsheets.Editor.Utils;
+using Gsheets.IO;
 using UnityEditor;
 using UnityEngine;
 
-namespace SheetData.Editor.Generator
+namespace Gsheets.Editor.Generator
 {
     public static class GsheetGenerator
     {
         private static string ProgressTitle = "Gsheet Generator";
         /// <summary> 데이터를 생성하고 Gsheet 클래스를 생성합니다 </summary>
-        public static async Task Run(SheetDataSettingScriptable target)
+        public static async Task Run(GSheetSettingScriptable target)
         {
             EditorUtility.DisplayProgressBar(ProgressTitle, "Start Generate", 0.1f);
             try
             {
                 EditorUtility.DisplayProgressBar(ProgressTitle, "Capture BeforeData", 0.3f);
-                var beforeGsheetData = GsheetDiffHelper.Capture(SheetDataSettingScriptable.Instance.FindGSheetInstance());
+                var beforeGsheetData = GsheetDiffHelper.Capture(GSheetSettingScriptable.Instance.FindGSheetInstance());
                 EditorUtility.DisplayProgressBar(ProgressTitle, "Refresh GoogleSheet Names", 0.3f);
                 target.OnBeginGenerator();
                 bool successRefresh = await RefreshSheetNames(target);
@@ -44,7 +43,7 @@ namespace SheetData.Editor.Generator
                 }
                 EditorUtility.DisplayProgressBar(ProgressTitle, "Create LwBinary Data", 0.7f);
                 Dictionary<string, TypeModel> modelMap = new Dictionary<string, TypeModel>();
-                SheetBinaryWriter writer = SheetBinaryWriter.Create($"Resources/{SheetDataSettingScriptable.BinaryFileName}.bytes");
+                GSheetBinaryWriter writer = GSheetBinaryWriter.Create($"Resources/{GSheetSettingScriptable.BinaryFileName}.bytes");
                 writer.Write(sheetDatas.Count);
                 foreach (var sheetData in sheetDatas)
                 {
@@ -80,7 +79,7 @@ namespace SheetData.Editor.Generator
                 GSheetModel model = new GSheetModel(sheetDatas.ToArray(), target.GeneratorNameSpace);
                 IOUtils.SaveFile(IOUtils.GetSystemPath($"{target.CodeGenerationPath}/{GSheetModel.NAME}.cs"),
                     Encoding.UTF8.GetBytes(model.Generator()));
-                EditorPrefs.SetString(SheetDataSettingScriptableEditor.LOG_KEY,
+                EditorPrefs.SetString(GSheetSettingScriptableEditor.LOG_KEY,
                     $"BinarySize - {writerSize:N0} bytes, Updated - {DateTime.Now.ToString()}");
                 AssetDatabase.Refresh();
                 EditorUtility.DisplayProgressBar(ProgressTitle, "Call OnEndGenerator()", 1f);
@@ -97,7 +96,7 @@ namespace SheetData.Editor.Generator
         }
 
         /// <summary> 시트의 이름들을 갱신하고 Scriptable에 메타데이터로 등록합니다 </summary>
-        static async Task<bool> RefreshSheetNames(SheetDataSettingScriptable target)
+        static async Task<bool> RefreshSheetNames(GSheetSettingScriptable target)
         {
             target.SheetInfos.Clear();
             var names = await SheetLoader.GetSheetNames(target.SheetID);
@@ -111,7 +110,7 @@ namespace SheetData.Editor.Generator
         }
         
         /// <summary> 지정된 Localize Sheet를 참조해 번역대상 언어코드를 생성합니다. </summary>
-        static void CreateLocalizeEnums(SheetDataSettingScriptable target)
+        static void CreateLocalizeEnums(GSheetSettingScriptable target)
         {
             if(string.IsNullOrEmpty(target.LocalizeSetting.SheetName))
                 return;

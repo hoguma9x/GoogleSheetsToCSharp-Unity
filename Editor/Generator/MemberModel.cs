@@ -1,6 +1,6 @@
-﻿using SheetData.Editor.DownLoader;
+﻿using Gsheets.Editor.DownLoader;
 
-namespace SheetData.Editor.Generator
+namespace Gsheets.Editor.Generator
 {
     public class GenericMemberModel : MemberModel
     {

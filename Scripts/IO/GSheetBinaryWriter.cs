@@ -1,24 +1,24 @@
 ﻿using System;
 using System.IO;
-using Gsheets.Internal.LWSerializer;
+using LWSerializer;
 using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
-namespace SheetData.IO
+namespace Gsheets.IO
 {
-    public class SheetBinaryWriter : LwBinaryWriter
+    public class GSheetBinaryWriter : LwBinaryWriter
     {
         private string _fileName = "";
         
-        private SheetBinaryWriter() : base(1024)
+        private GSheetBinaryWriter() : base(1024)
         {
         }
 
-        public static SheetBinaryWriter Create(string filename)
+        public static GSheetBinaryWriter Create(string filename)
         {
-            SheetBinaryWriter result = new();
+            GSheetBinaryWriter result = new();
             result._fileName = filename;
             return result;
         }

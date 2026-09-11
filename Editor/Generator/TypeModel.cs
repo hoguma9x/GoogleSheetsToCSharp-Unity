@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Gsheets.Internal.LWSerializer;
-using Gsheets.Internal.Scriban;
-using SheetData.Editor.DownLoader;
-using SheetData.IO;
+using Gsheets.Editor.DownLoader;
+using LWSerializer;
+using Scriban;
+using Gsheets.IO;
 using UnityEngine;
 
-namespace SheetData.Editor.Generator
+namespace Gsheets.Editor.Generator
 {
     public class TypeModel
     {
@@ -63,7 +63,7 @@ namespace SheetData.Editor.Generator
         public const string Template_Class = @"{{~ for us in usings ~}}
 using {{ us }};
 {{~ end ~}}
-using Gsheets.Internal.LWSerializer;
+using LWSerializer;
 
 namespace {{ namespace_name }}
 {

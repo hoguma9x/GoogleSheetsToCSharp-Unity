@@ -3,7 +3,7 @@ using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
-namespace SheetData.Editor.Localize
+namespace Gsheets.Editor.Localize
 {
     public static class PropertyUtils
     {

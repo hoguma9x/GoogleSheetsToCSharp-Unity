@@ -1,14 +1,9 @@
-﻿
-
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
-using Gsheets.Internal.LWSerializer;
-using Unity.Collections;
-using UnityEngine;
 
-namespace SheetData.Editor.DiffView
+namespace Gsheets.Editor.DiffView
 {
     public class GsheetDiffHelper
     {

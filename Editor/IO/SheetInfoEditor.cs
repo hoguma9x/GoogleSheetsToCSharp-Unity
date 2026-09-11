@@ -1,12 +1,12 @@
-﻿using SheetData.IO;
+﻿using Gsheets.IO;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace SheetData.Editor.IO
+namespace Gsheets.Editor.IO
 {
-    [CustomPropertyDrawer(typeof(SheetInfo))]
+    [CustomPropertyDrawer(typeof(GSheetInfo))]
     public class SheetInfoEditor : PropertyDrawer
     {
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)

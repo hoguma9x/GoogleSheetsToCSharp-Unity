@@ -1,21 +1,21 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using Gsheets.Internal.LWSerializer;
+using LWSerializer;
 
-namespace SheetData.IO
+namespace Gsheets.IO
 {
-    public static class SheetDataHelper
+    public static class GSheetHelper
     {
         //WriteDirect 참조
-        public static object ReadSheet(SheetBinaryReader reader)
+        public static object ReadSheet(GSheetBinaryReader reader)
         {
             List<object> list = new();
-            Dictionary<string, Gsheets.Internal.LWSerializer.ILwSerializable> dic = new();
-            reader.Read(out SheetInfo info);
+            Dictionary<string, ILwSerializable> dic = new();
+            reader.Read(out GSheetInfo info);
             for (int j = 0; j < info.DataCount; j++)
             {
-                var instance = (Gsheets.Internal.LWSerializer.ILwSerializable)Activator.CreateInstance(info.GetSheetType());
+                var instance = (ILwSerializable)Activator.CreateInstance(info.GetSheetType());
                 if (info.IsDictionary)
                 {
                     reader.Read(out string key);
@@ -32,7 +32,7 @@ namespace SheetData.IO
             return info.IsDictionary ? dic : list.ToArray();
         }
         
-        public static T ReadSheet<T>(SheetBinaryReader reader)
+        public static T ReadSheet<T>(GSheetBinaryReader reader)
         {
             var sheetResult = ReadSheet(reader);
             var targetType = typeof(T);

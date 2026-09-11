@@ -1,9 +1,9 @@
 ﻿#if UNITY_EDITOR
 using UnityEngine;
 using UnityEditor;
-using SheetData.Localize;
+using Gsheets.Localize;
 //Gemini Generator
-namespace SheetData.Localize.Editor
+namespace Gsheets.Localize.Editor
 {
     // 1. LocalizeSetting 자체를 그리는 Drawer
     [CustomPropertyDrawer(typeof(LocalizeSetting))]

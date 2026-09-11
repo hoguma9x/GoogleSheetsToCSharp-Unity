@@ -4,7 +4,7 @@ using System.Reflection;
 using System.Collections;
 using Localize.Elements;
 
-namespace SheetData.Editor.Localize
+namespace Gsheets.Editor.Localize
 {
     
     [CustomPropertyDrawer(typeof(LocalizeString))]

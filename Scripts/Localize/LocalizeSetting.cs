@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-namespace SheetData.Localize
+namespace Gsheets.Localize
 {
     [Serializable]
     public class LocalizeSetting

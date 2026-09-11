@@ -4,20 +4,20 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SheetData.Editor.DiffView;
-using SheetData.Editor.DownLoader;
-using SheetData.Editor.Generator;
-using SheetData.Editor.Utils;
-using SheetData.IO;
+using Gsheets.Editor.DiffView;
+using Gsheets.Editor.Generator;
+using Gsheets.Editor.Utils;
+using Gsheets.Editor.DownLoader;
+using Gsheets.IO;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
 
-namespace SheetData.Editor
+namespace Gsheets.Editor
 {
-    [CustomEditor(typeof(SheetDataSettingScriptable))]
+    [CustomEditor(typeof(GSheetSettingScriptable))]
     [CanEditMultipleObjects]
-    public class SheetDataSettingScriptableEditor : UnityEditor.Editor
+    public class GSheetSettingScriptableEditor : UnityEditor.Editor
     {
         public const string MENU_ITEM_PATH = "Tools/- Gsheet -/";
         public const string LOG_KEY = "GSHEETLOGKEY";
@@ -26,13 +26,13 @@ namespace SheetData.Editor
         [MenuItem(MENU_ITEM_PATH+"Generate", priority = -1)]
         public static void Menu_Generate()
         {
-            _ = GsheetGenerator.Run(SheetDataSettingScriptable.Instance);
+            _ = GsheetGenerator.Run(GSheetSettingScriptable.Instance);
         }
         
         [MenuItem(MENU_ITEM_PATH+"View GoogleSheet", priority = 0)]
         public static void Menu_OpenSheet()
         {
-            Application.OpenURL($"https://docs.google.com/spreadsheets/d/{SheetDataSettingScriptable.Instance.SheetID}/edit");
+            Application.OpenURL($"https://docs.google.com/spreadsheets/d/{GSheetSettingScriptable.Instance.SheetID}/edit");
         }
         
         [MenuItem(MENU_ITEM_PATH+"GsheetSetting", priority = -2)]
@@ -49,9 +49,9 @@ namespace SheetData.Editor
         [UnityEditor.Callbacks.DidReloadScripts]
         private static void OnScriptsReloaded()
         {
-            if (SheetDataSettingScriptable.Instance == null)
+            if (GSheetSettingScriptable.Instance == null)
             {
-                ScriptableCreator.Create<SheetDataSettingScriptable>($"Assets/Resources/{SheetDataSettingScriptable.FileName}.asset");
+                ScriptableCreator.Create<GSheetSettingScriptable>($"Assets/Resources/{GSheetSettingScriptable.FileName}.asset");
             }
         }
         #endregion
@@ -60,7 +60,7 @@ namespace SheetData.Editor
         {
             GUILayout.Label("GSheet Setting", EditorStyles.largeLabel);
             base.OnInspectorGUI();
-            SheetDataSettingScriptable scriptable = (SheetDataSettingScriptable)target;
+            GSheetSettingScriptable scriptable = (GSheetSettingScriptable)target;
             if (scriptable == null)
                 return;
             GUILayout.Space(20);
@@ -77,10 +77,10 @@ namespace SheetData.Editor
             scriptable.OnInspectorGUI();
         }
 
-        public static SheetDataSettingScriptable GetScriptable()
+        public static GSheetSettingScriptable GetScriptable()
         {
-            string[] guids = AssetDatabase.FindAssets("t:SheetDataSettingScriptable");
-            var asset = AssetDatabase.LoadAssetAtPath<SheetDataSettingScriptable>(AssetDatabase.GUIDToAssetPath(guids[0]));
+            string[] guids = AssetDatabase.FindAssets($"t:{nameof(GSheetSettingScriptable)}");
+            var asset = AssetDatabase.LoadAssetAtPath<GSheetSettingScriptable>(AssetDatabase.GUIDToAssetPath(guids[0]));
             return asset;
         }
     }
@@ -89,7 +89,7 @@ namespace SheetData.Editor
     {
         public void CreateGUI()
         {
-            var asset = SheetDataSettingScriptableEditor.GetScriptable();
+            var asset = GSheetSettingScriptableEditor.GetScriptable();
             titleContent = new GUIContent(nameof(GsheetSettingWindow));
             // 래퍼 요소 생성: 이 한 줄로 인스펙터가 통째로 들어옵니다.
             InspectorElement inspector = new InspectorElement(asset);

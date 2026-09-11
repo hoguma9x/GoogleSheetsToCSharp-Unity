@@ -1,8 +1,8 @@
 ﻿using System;
-using SheetData.IO;
+using Gsheets.IO;
 using Unity.Collections;
 
-namespace SheetData.Scripts.Parsing
+namespace Gsheets.Parsing
 {
     [ParserTrigger(typeof(NativeArray<>))]
     public class Format_NativeArray<T> : IParserFormatter where T : unmanaged
@@ -16,7 +16,7 @@ namespace SheetData.Scripts.Parsing
             return array;
         }
 
-        public void Write(string content, SheetBinaryWriter writer)
+        public void Write(string content, GSheetBinaryWriter writer)
         {
             writer.Write((NativeArray<T>)ToData(content));
         }
@@ -27,7 +27,7 @@ namespace SheetData.Scripts.Parsing
     {
         public object ToData(string content) => ParserFormatter.Get(typeof(T)).ToData(content);
 
-        public void Write(string content, SheetBinaryWriter writer) => 
+        public void Write(string content, GSheetBinaryWriter writer) => 
             ParserFormatter.Get(typeof(T)).Write(content, writer);
         
     }
@@ -36,7 +36,7 @@ namespace SheetData.Scripts.Parsing
     public class Format_FixedString32 : IParserFormatter
     {
         public object ToData(string content) => new FixedString32Bytes(content);
-        public void Write(string content, SheetBinaryWriter writer) => 
+        public void Write(string content, GSheetBinaryWriter writer) => 
             writer.Write( new FixedString32Bytes(content));
     }
     
@@ -44,7 +44,7 @@ namespace SheetData.Scripts.Parsing
     public class Format_FixedString64 : IParserFormatter
     {
         public object ToData(string content) => new FixedString64Bytes(content);
-        public void Write(string content, SheetBinaryWriter writer) => 
+        public void Write(string content, GSheetBinaryWriter writer) => 
             writer.Write( new FixedString64Bytes(content));
     }
     
@@ -52,7 +52,7 @@ namespace SheetData.Scripts.Parsing
     public class Format_FixedString128 : IParserFormatter
     {
         public object ToData(string content) => new FixedString128Bytes(content);
-        public void Write(string content, SheetBinaryWriter writer) => 
+        public void Write(string content, GSheetBinaryWriter writer) => 
             writer.Write( new FixedString128Bytes(content));
     }
     
@@ -60,7 +60,7 @@ namespace SheetData.Scripts.Parsing
     public class Format_FixedString512 : IParserFormatter
     {
         public object ToData(string content) => new FixedString512Bytes(content);
-        public void Write(string content, SheetBinaryWriter writer) => 
+        public void Write(string content, GSheetBinaryWriter writer) => 
             writer.Write( new FixedString512Bytes(content));
     }
     
@@ -68,7 +68,7 @@ namespace SheetData.Scripts.Parsing
     public class Format_FixedString4096 : IParserFormatter
     {
         public object ToData(string content) => new FixedString4096Bytes(content);
-        public void Write(string content, SheetBinaryWriter writer) => 
+        public void Write(string content, GSheetBinaryWriter writer) => 
             writer.Write( new FixedString4096Bytes(content));
     }
 

@@ -1,32 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Gsheets.Internal.LWSerializer;
-using SheetData.Editor.Generator;
-using SheetData.IO;
-using SheetData.Scripts.Parsing;
+using Gsheets.Editor.Generator;
+using Gsheets.IO;
+using Gsheets.Parsing;
+using LWSerializer;
 using Unity.Collections;
 using UnityEngine;
 
-namespace SheetData.Editor.DownLoader
+namespace Gsheets.Editor.DownLoader
 {
     public class SheetRawData
     {
         delegate void SplitRowStringForEachHandler(string str, int index);
         private int _columnCount;
-        private SheetInfo _sheetInfo;
+        private GSheetInfo _gSheetInfo;
         private List<string[]> _rows;
         private List<HeaderType> _headers;
         
-        public string SheetName => _sheetInfo.SheetName;
+        public string SheetName => _gSheetInfo.SheetName;
         public Type SheetNameToType => TypeFinder.Find(SheetName);
         public List<string[]> Rows => _rows;
         public List<HeaderType> Headers => _headers;
         public string TypeKeyword => _rows.First().First().ToLower();
         
-        public SheetRawData(SheetInfo info, string csvData)
+        public SheetRawData(GSheetInfo info, string csvData)
         {
-            _sheetInfo = info;
+            _gSheetInfo = info;
             if (string.IsNullOrEmpty(csvData))
                 return;
             _rows = new();
@@ -47,7 +47,7 @@ namespace SheetData.Editor.DownLoader
                 _rows.Add(strs);
             }
             RefreshHeaderRowType();
-            _sheetInfo = _sheetInfo.UpdateInfo(_rows.Count - 1, IsDictionary());
+            _gSheetInfo = _gSheetInfo.UpdateInfo(_rows.Count - 1, IsDictionary());
         }
 
         public bool IsExternalSheet()
@@ -88,9 +88,9 @@ namespace SheetData.Editor.DownLoader
             return new TypeModel(this, nameSpace);
         }
 
-        public void WriteDirect(SheetBinaryWriter writer)
+        public void WriteDirect(GSheetBinaryWriter writer)
         {
-            writer.Write(_sheetInfo);
+            writer.Write(_gSheetInfo);
             for (int i = 1; i < _rows.Count; i++)
             {
                 var row = _rows[i];
@@ -117,7 +117,7 @@ namespace SheetData.Editor.DownLoader
             _headers[0] = new HeaderType("string");
         }
         
-        bool IsAnnotation(string strs) => strs.Length >= 2 && strs.Substring(0, 2) == SheetDataSettingScriptable.AnnotationText;
+        bool IsAnnotation(string strs) => strs.Length >= 2 && strs.Substring(0, 2) == GSheetSettingScriptable.AnnotationText;
 
         int SearchIgnoreColumns(string firstRow, List<int> ignoreColumIdxs)
         {

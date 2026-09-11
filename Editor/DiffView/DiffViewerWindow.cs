@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using Gsheets.Internal.LWSerializer;
-using SheetData.Editor.Utils;
-using SimpleJSON;
+using Gsheets.Editor.Utils;
 using UnityEditor;
 using UnityEngine;
 
-namespace SheetData.Editor.DiffView
+namespace Gsheets.Editor.DiffView
 {
     public class DiffViewerWindow : EditorWindow
     {
@@ -17,7 +14,7 @@ namespace SheetData.Editor.DiffView
         public void Refresh(object beforeGsheetData)
         {
             var before = (Dictionary<string, object>)beforeGsheetData;
-            var after = (Dictionary<string, object>)GsheetDiffHelper.Capture(SheetDataSettingScriptable.Instance
+            var after = (Dictionary<string, object>)GsheetDiffHelper.Capture(GSheetSettingScriptable.Instance
                 .FindGSheetInstance());
             _diffText = JsonDiffDrawer.GenerateDiffText(before, after);
 
@@ -45,7 +42,7 @@ namespace SheetData.Editor.DiffView
         private void OnGUI()
         {
             GUILayout.Label("- DiffViewerWindow - ");
-            GUILayout.Label(EditorPrefs.GetString(SheetDataSettingScriptableEditor.LOG_KEY));
+            GUILayout.Label(EditorPrefs.GetString(GSheetSettingScriptableEditor.LOG_KEY));
             GUILayout.Space(10);
             JsonDiffDrawer.DrawTextLog(_diffText);
         }

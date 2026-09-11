@@ -1,11 +1,12 @@
 {
-    "name": "SheetData.Editor",
-    "rootNamespace": "SheetData.Editor",
+    "name": "Gsheets.Editor",
+    "rootNamespace": "Gsheets.Editor",
     "references": [
-        "SheetData",
         "Unity.Collections",
         "Unity.TextMeshPro",
-        "Unity.TextMeshPro.Editor"
+        "Unity.TextMeshPro.Editor",
+        "LWSerializer",
+        "Gsheets"
     ],
     "includePlatforms": [
         "Editor"

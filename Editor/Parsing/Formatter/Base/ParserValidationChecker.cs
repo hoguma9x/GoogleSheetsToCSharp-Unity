@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using SheetData.Editor.Generator;
+using Gsheets.Editor.Generator;
 using UnityEditor;
 using UnityEngine;
 
-namespace SheetData.Scripts.Parsing
+namespace Gsheets.Parsing
 {
     [InitializeOnLoad]
     public static class ParserValidationChecker

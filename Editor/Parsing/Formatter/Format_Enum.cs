@@ -1,7 +1,7 @@
 ﻿using System;
-using SheetData.IO;
+using Gsheets.IO;
 
-namespace SheetData.Scripts.Parsing
+namespace Gsheets.Parsing
 {
     public class Format_Enum<T> : IParserFormatter where T : Enum
     {
@@ -11,7 +11,7 @@ namespace SheetData.Scripts.Parsing
             return enumValue == null ? default(T) : enumValue;
         }
 
-        public void Write(string content, SheetBinaryWriter writer)
+        public void Write(string content, GSheetBinaryWriter writer)
         {
             writer.Write((T)ToData(content));
         }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using UnityEditor;
 
-namespace SheetData.Scripts.Parsing
+namespace Gsheets.Parsing
 {
     
     [InitializeOnLoad]

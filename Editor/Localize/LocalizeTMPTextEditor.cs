@@ -1,11 +1,11 @@
-﻿using Localize;
+﻿using Gsheets.SheetData;
+using Localize;
 using Localize.Elements;
-using SheetData.SheetData;
 using UnityEditor;
 using UnityEngine;
 using TMPro.EditorUtilities;
 
-namespace SheetData.Editor.Localize
+namespace Gsheets.Editor.Localize
 {
     [CustomEditor(typeof(TextMeshProLocalizeUGUI), true), CanEditMultipleObjects]
     public class LocalizeTMPTextEditor : TMP_EditorPanelUI

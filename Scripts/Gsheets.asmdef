@@ -1,9 +1,10 @@
 {
-    "name": "SheetData",
-    "rootNamespace": "SheetData",
+    "name": "Gsheets",
+    "rootNamespace": "Gsheets",
     "references": [
         "Unity.Collections",
-        "Unity.TextMeshPro"
+        "Unity.TextMeshPro",
+        "LWSerializer"
     ],
     "includePlatforms": [
         "Android",

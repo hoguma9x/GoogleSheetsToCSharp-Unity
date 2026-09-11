@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SheetData.Editor.Generator
+namespace Gsheets.Editor.Generator
 {
     public interface ICustomTypeGeneratorable
     {

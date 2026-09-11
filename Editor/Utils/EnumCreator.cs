@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Gsheets.Internal.Scriban;
+using Scriban;
 
-namespace SheetData.Editor.Utils
+namespace Gsheets.Editor.Utils
 {
     public class EnumCreator
     {
