@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Gsheets.IO;
 using Gsheets.Localize;
 using Localize.Elements;
-using TextMateSharp.Grammars;
 using UnityEngine;
 
 namespace Gsheets

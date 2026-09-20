@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using LWSerializer;
+using UnityEngine;
 
 namespace Gsheets.IO
 {
@@ -15,17 +16,25 @@ namespace Gsheets.IO
             reader.Read(out GSheetInfo info);
             for (int j = 0; j < info.DataCount; j++)
             {
-                var instance = (ILwSerializable)Activator.CreateInstance(info.GetSheetType());
-                if (info.IsDictionary)
+                var type = info.GetSheetType();
+                var instance = Activator.CreateInstance(info.GetSheetType());
+                if (instance is ILwSerializable serializable)
                 {
-                    reader.Read(out string key);
-                    instance.OnNativeRead(reader);
-                    dic.Add(key, instance);
+                    if (info.IsDictionary)
+                    {
+                        reader.Read(out string key);
+                        serializable.OnNativeRead(reader);
+                        dic.Add(key, serializable);
+                    }
+                    else
+                    {
+                        serializable.OnNativeRead(reader);
+                        list.Add(serializable);
+                    }
                 }
                 else
                 {
-                    instance.OnNativeRead(reader);
-                    list.Add(instance);
+                    Debug.LogError("SheetType 에 해당하는 형식은 ILwSerializable가 구현되어야합니다");
                 }
             }
             reader.ReadPadding(32);

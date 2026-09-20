@@ -90,7 +90,7 @@ namespace Gsheets.Editor.Generator
             }
             catch (Exception e)
             {
-                Debug.LogError(e);
+                Debug.LogException(e);
             }
             EditorUtility.ClearProgressBar();
         }
