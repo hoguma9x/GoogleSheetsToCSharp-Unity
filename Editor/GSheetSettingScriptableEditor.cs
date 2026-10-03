@@ -64,7 +64,9 @@ namespace Gsheets.Editor
             if (scriptable == null)
                 return;
             GUILayout.Space(20);
+            GUILayout.Label($"- Referenced Assembly Count {scriptable.ReferencedAssemblies.Count}");
             GUILayout.Label("- LastUpdateInfo \n" + EditorPrefs.GetString(LOG_KEY, "Empty Log"));
+            
             GUILayout.Space(20);
             
             GUILayout.BeginHorizontal();

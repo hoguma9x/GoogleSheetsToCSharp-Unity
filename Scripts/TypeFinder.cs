@@ -50,6 +50,7 @@ namespace Gsheets
         
         private static void RefreshAssemblies()
         {
+            
             _assemblies = new();
             //Find Unity Type ->  asd 
             //6.8 이후 CoreCLR 사용시 UnityEngine.Assemblies.CurrentAssemblies로 대체
@@ -58,8 +59,7 @@ namespace Gsheets
             {
                 if (assembly.IsDynamic)
                     continue;
-                //var fullname = assembly.FullName;
-                //var location = assembly.Location;
+#if UNITY_EDITOR
                 var targetStr = assembly.Location;
                 bool isCustomLibrary = targetStr.Contains("Library") && !(targetStr.Contains("Unity") || targetStr.Contains("unity"));
                 bool isTarget = targetStr.Contains("Assets") ||
@@ -68,6 +68,17 @@ namespace Gsheets
                                 targetStr.Contains("Unity.Collections") ||
                                 targetStr.Contains($"{nameof(Gsheets)}") ||
                                 targetStr.Contains($"{nameof(Gsheets)}.Editor");
+#else
+                bool isTarget = false;
+                foreach (var referencedAssembly in GSheetSettingScriptable.Instance.ReferencedAssemblies)
+                {
+                    if (assembly.Location.Contains(referencedAssembly))
+                    {
+                        isTarget = true;
+                        break;
+                    }
+                }      
+#endif
                 if (isTarget)
                     _assemblies.Add(assembly);
             }

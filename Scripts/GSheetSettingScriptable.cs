@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using Gsheets.IO;
 using Gsheets.Localize;
 using Localize.Elements;
@@ -25,7 +25,9 @@ namespace Gsheets
         [SerializeField] private string _sheetID = "1188AKPfAl2taqn6G-JDENJF-WeO_YA_gE4SRYzMRZBc";
         [SerializeField] private LocalizeSetting _localizeSetting;
         [Space(20), SerializeField] private List<GSheetInfo> _sheetInfos = new List<GSheetInfo>();
-      
+        
+        [SerializeField, HideInInspector] private List<string> _assemblies = new List<string>();
+        
         private static GSheetSettingScriptable _instance = null;
         public string SheetID => _sheetID;
         public string GeneratorNameSpace => _codeGenerationPath.Replace("Scripts/", "").Replace("/", ".");//_generatorNameSpace;
@@ -33,7 +35,7 @@ namespace Gsheets
         public List<GSheetInfo> SheetInfos => _sheetInfos;
         public LocalizeSetting LocalizeSetting => _localizeSetting;
         public Action GsheetReLoadFunc { get; set; }
-        public Type GSheetType => Type.GetType($"{GeneratorNameSpace}.Gsheet, {GeneratorAssemblyName}");
+        public List<string> ReferencedAssemblies => _assemblies;
         
 
         public static GSheetSettingScriptable Instance
@@ -50,9 +52,26 @@ namespace Gsheets
         
         public object FindGSheetInstance()
         {
-            if (GSheetType == null)
+            var type = GetGsheetType();
+            if (type == null)
                 return null;
-            return GSheetType.GetProperty("Instance")?.GetValue(null);
+            return type.GetProperty("Instance")?.GetValue(null);
+        }
+
+        public Type GetGsheetType()
+        {
+            return AppDomain.CurrentDomain
+                .GetAssemblies()
+                .Select(assembly => assembly.GetType($"{GeneratorNameSpace}.Gsheet"))
+                .FirstOrDefault(type => type != null);
+        }
+
+        public Type GetLocalizeType()
+        {
+            return AppDomain.CurrentDomain
+                .GetAssemblies()
+                .Select(assembly => assembly.GetType($"{GeneratorNameSpace}.{LocalizeSetting.SheetName}"))
+                .FirstOrDefault(type => type != null);
         }
         
         public virtual void OnBeginGenerator()
@@ -62,9 +81,23 @@ namespace Gsheets
 
         public virtual void OnEndGenerator()
         {
+#if UNITY_EDITOR
+            Debug.Log("OnEndGenerator");
+            var assemblies = new HashSet<string>();
+            var sheetType = GetGsheetType();
+            var asms = sheetType.Assembly.GetReferencedAssemblies();
+            foreach (var assembly in asms)
+                assemblies.Add(assembly.Name);
+            var allFields= sheetType.GetFields(BindingFlags.Instance | BindingFlags.Public);
+            foreach (var field in allFields)
+                if (field.ReflectedType?.Assembly != null)
+                    assemblies.Add(field.ReflectedType?.Assembly.GetName(true).Name);
+            _assemblies = assemblies.ToList();
             LocalizeSheetBinder.Initialize();
             GsheetReLoadFunc?.Invoke();
             LocalizeManager.Instance.RefreshListener(RefreshMode.All);
+            UnityEditor.EditorUtility.SetDirty(this);
+#endif
         }
 
         public virtual void OnInspectorGUI()

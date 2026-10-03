@@ -35,8 +35,9 @@ namespace Gsheets.Localize
                     _gsheetInstance = gsheetData.FindGSheetInstance();
                     if (_gsheetInstance == null)
                         return false;
-                    _gsheetLocalizeDictionaryField = gsheetData.GSheetType.GetProperty(gsheetData.LocalizeSetting.SheetName);
-                    var localizeType = Type.GetType($"{gsheetData.GeneratorNameSpace}.{gsheetData.LocalizeSetting.SheetName}, {GSheetSettingScriptable.GeneratorAssemblyName}");
+                    var gsheetType = gsheetData.GetGsheetType();
+                    _gsheetLocalizeDictionaryField = gsheetType.GetProperty(gsheetData.LocalizeSetting.SheetName);
+                    var localizeType = gsheetData.GetLocalizeType();
                     var allProperties = localizeType.GetProperties();
                     EnumCache<LangCode> langCodeCache = new EnumCache<LangCode>();
                     foreach (var property in allProperties)
