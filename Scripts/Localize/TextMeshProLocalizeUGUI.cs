@@ -3,7 +3,7 @@ using Localize.Elements;
 using TMPro;
 using UnityEngine;
 
-namespace Gsheets.SheetData
+namespace Gsheets.Localize
 {
     public class TextMeshProLocalizeUGUI : TextMeshProUGUI, ILocalizeListener
     {

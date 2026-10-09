@@ -1,5 +1,4 @@
-﻿using System;
-using Gsheets.IO;
+﻿using Gsheets.IO;
 using Unity.Collections;
 
 namespace Gsheets.Parsing
@@ -9,7 +8,7 @@ namespace Gsheets.Parsing
     {
         public object ToData(string content)
         {
-            var items = StringArray.Convert(content);
+            var items = GSheetHelper.Convert(content);
             NativeArray<T> array = new NativeArray<T>(items.Count, Allocator.Temp);
             for (int i = 0; i < items.Count; i++)
                 array[i] = (T)ParserFormatter.Get(typeof(T)).ToData(items[i]);

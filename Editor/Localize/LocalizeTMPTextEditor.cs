@@ -1,5 +1,5 @@
-﻿using Gsheets.SheetData;
-using Localize;
+﻿using Gsheets;
+using Gsheets.Localize;
 using Localize.Elements;
 using UnityEditor;
 using UnityEngine;

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Gsheets.IO;
+﻿using Gsheets.IO;
 
 namespace Gsheets.Parsing
 {
@@ -13,12 +11,12 @@ namespace Gsheets.Parsing
     {
         public object ToData(string content)
         {
-            var contents = StringArray.Convert(content);
+            var contents = GSheetHelper.Convert(content);
             var elementParser = ParserFormatter.Get(typeof(T));
             T[] newArray = new T[contents.Count];
             for (int i = 0; i < contents.Count; i++)
             {
-                var str = StringArray.RemoveBucket(contents[i]);
+                var str = GSheetHelper.RemoveBucket(contents[i]);
                 newArray[i] = (T)elementParser.ToData(str);
             }
             return newArray;
