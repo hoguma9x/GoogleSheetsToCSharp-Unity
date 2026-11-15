@@ -5,6 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 ![.NET Standard 2.1](https://img.shields.io/badge/.NET%20Standard-2.1-orange)
 ![.NET](https://img.shields.io/badge/.NET-8.0%2B-blueviolet)
+![Version](https://img.shields.io/badge/version-1.4.0-blue)
 
 GSheet is a plugin that converts game design data written in Google Sheets into C# types and binary data ready for use in Unity.
 Data created in Google Sheets can be used in both the Editor and at runtime.
@@ -38,6 +39,8 @@ This plugin was developed to consolidate the core features required in real live
    - Provides localization functionality using Google Sheets.
    - `TextMeshProLocalizeUGUI` offers multi-language support and font mapping for TextMeshPro.
    - `LocalizeString` returns a string according to the currently configured language.
+7. __JSON Export (1.4.0)__
+   - Generates a JSON file on every Generate so that the sheet data used by the client can also be used by servers or third-party programs.
 
 ## Configuration
 <img width="650" height="505" alt="image" src="https://github.com/user-attachments/assets/d3fee405-affa-4ab1-949e-aab4ed5c0835" />
@@ -141,7 +144,7 @@ The following types are available with the default implementation.
 - Custom types that provide a parsing method via `IParserFormatter` or `IGSheetParser`
 - User-defined types that support binary serialization via `ILwSerializable`
 
-Arrays and NativeArrays decompose the internal string using `StringArray.Convert` and re-parse each element with the appropriate type formatter.
+Arrays and NativeArrays decompose the internal string using `GSheetHelper.Convert` and re-parse each element with the appropriate type formatter.
 
 ## Running Generation
 
@@ -149,16 +152,17 @@ The following items are available from the Unity top menu.
 
 | Menu | Description |
 | --- | --- |
-| `Tools/- Gsheet -/Generate` | Downloads the Google Sheet, saves binary data, and runs code generation. |
+| `Tools/- Gsheet -/Generate` | Downloads the Google Sheet, saves binary and JSON data, and runs code generation. |
 | `Tools/- Gsheet -/View GoogleSheet` | Opens the currently configured Google Sheet in a browser. |
-| `Tools/- Gsheet -/View Setting` | Opens the `GsheetSetting` Inspector window. |
+| `Tools/- Gsheet -/GsheetSetting` | Opens the `GsheetSetting` Inspector window. |
 | `Tools/- Gsheet -/View Log-Diff` | Opens the Diff Viewer to inspect data changes before and after generation. |
 
 On successful generation, the following files are updated.
 
 ```text
 Assets/Resources/GsheetData.bytes
-Assets/Scripts/Generator/GSheet.cs
+Assets/GsheetExport/GsheetData.json
+Assets/Scripts/Generator/Gsheet.cs
 Assets/Scripts/Generator/{SheetName}.cs
 ```
 
@@ -200,6 +204,55 @@ Gsheet.UI_OK
 
 Unity-generated data can also be read by the .NET 8+ common library in [DotNet~](DotNet~/README.md). Regenerate the C# sources with the updated templates, share those sources and the matching `.bytes` file, and reference `DotNet~/Gsheets.Core/Gsheets.Core.csproj` from your server. Use `Gsheet.LoadFromFile(path)` / `LoadFromBytes(data)` and keep the returned instance; Unity's existing `Gsheet.Instance` / Resources workflow remains available. See the linked guide for LWSerializer configuration, portable Unity field types, custom contracts and ASP.NET Core DI examples.
 
+## JSON Export (Server / Third-Party Integration)
+
+Starting with 1.4.0, every Generate also writes `Assets/GsheetExport/GsheetData.json` alongside the binary, so the sheet data used by the client can be consumed by servers or third-party programs.
+
+- Cell values are parsed with the same parsers as the binary, so the JSON holds the same values as the `.bytes` file.
+- The file is stored outside the `Resources` folder and is not included in game builds.
+- It is saved as UTF-8 (no BOM) and can be read with any standard JSON parser.
+
+```json
+{
+  "version": 1,
+  "generatedAt": "2026-11-15T12:00:00Z",
+  "sheets": {
+    "ExampleStruct": {
+      "kind": "struct",
+      "collection": "dictionary",
+      "fields": [ { "name": "name", "type": "string" }, { "name": "hp", "type": "int" } ],
+      "data": {
+        "unit_100": { "name": "Soldier", "hp": 100 },
+        "unit_101": { "name": "Archer", "hp": 70 }
+      }
+    }
+  }
+}
+```
+
+| Key | Description |
+| --- | --- |
+| `version` | JSON format version. |
+| `generatedAt` | Generation time (UTC, ISO 8601). |
+| `sheets.{SheetName}.kind` | The A1 keyword (`class` / `struct` / `external`). |
+| `sheets.{SheetName}.collection` | `dictionary` means `data` is a key-to-object map; `list` means an array of objects. |
+| `sheets.{SheetName}.fields` | Field names and type strings declared in the first row. |
+| `sheets.{SheetName}.data` | The actual data. |
+
+JSON representation by type:
+
+| Sheet type | JSON value |
+| --- | --- |
+| primitives (`int`, `float`, `bool`, etc.) | number / boolean (`NaN` and `Infinity` become `null`) |
+| `string`, `FixedString*Bytes` | string |
+| enum | name string |
+| arrays, `NativeArray<T>` | array |
+| `Vector2` / `Vector3` / `Vector2Int` / `Vector3Int` | `{"x", "y"(, "z")}` object |
+| `Color` | `{"r", "g", "b", "a"}` object (0-1) |
+| custom types | object made of public fields |
+
+`long` / `ulong` values are written as JSON numbers, so values above 2^53 may lose precision in environments such as JavaScript.
+
 ## Localization Usage
 
 Specify the localization sheet name in `Localize Setting / Sheet Name` within `GsheetSetting.asset`. The current sample configuration uses the `Localize` sheet.
@@ -217,8 +270,8 @@ On generation, `LangCode.cs` is updated to match the language columns of the loc
 To change the language in code, use `LocalizeManager`.
 
 ```csharp
-using SheetData;
-using SheetData.Localize;
+using Gsheets;
+using Gsheets.Localize;
 
 LocalizeManager.Instance.SetLanguage(LangCode.KR);
 ```
@@ -237,8 +290,8 @@ To convert a sheet string into a custom type, implement `IGSheetParser`. Since `
 
 ```csharp
 using LWSerializer;
-using SheetData.IO;
-using SheetData.Scripts.Parsing;
+using Gsheets.IO;
+using Gsheets.Parsing;
 
 public class CustomClass : IGSheetParser
 {
@@ -247,7 +300,7 @@ public class CustomClass : IGSheetParser
 
     public object ToData(string content)
     {
-        var datas = StringArray.Convert(content);
+        var datas = GSheetHelper.Convert(content);
         return new CustomClass
         {
             _unitName = datas[0],
@@ -255,7 +308,7 @@ public class CustomClass : IGSheetParser
         };
     }
 
-    public void Write(string content, SheetBinaryWriter writer)
+    public void Write(string content, GSheetBinaryWriter writer)
     {
         writer.Write((CustomClass)ToData(content));
     }
@@ -283,7 +336,7 @@ public class MyTargetTypeFormatter : IParserFormatter
         // Convert string to MyTargetType
     }
 
-    public void Write(string content, SheetBinaryWriter writer)
+    public void Write(string content, GSheetBinaryWriter writer)
     {
         writer.Write((MyTargetType)ToData(content));
     }
@@ -298,8 +351,9 @@ public class MyTargetTypeFormatter : IParserFormatter
 4. Each sheet is downloaded as a CSV.
 5. The first row header is read to interpret type information.
 6. Sheet data is saved as binary to `Assets/Resources/GsheetData.bytes`.
-7. Per-sheet types and `Gsheet.cs` are generated under `Assets/Scripts/Generator`.
-8. At runtime, the `Gsheet` singleton reads the binary via `Resources.Load<TextAsset>` and restores the data.
+7. The same data is saved to `Assets/GsheetExport/GsheetData.json` for servers and third-party programs.
+8. Per-sheet types and `Gsheet.cs` are generated under `Assets/Scripts/Generator`.
+9. At runtime, the `Gsheet` singleton reads the binary via `Resources.Load<TextAsset>` and restores the data.
 
 ## Viewing Changes
 <img width="525" height="735" alt="image" src="https://github.com/user-attachments/assets/8cfa128d-3d28-4636-9c72-6e311006af0b" />
@@ -311,6 +365,12 @@ Note that comparison for objects implementing `IDisposable` (such as `NativeArra
 - Google Sheets must be set to public or have appropriate sharing permissions accessible from the Editor. (Sharing with anyone who has the link is recommended.)
 - Fields that require disposal, such as `NativeArray<T>` and `NativeReference<T>`, are cleaned up in the generated type's `Dispose()`. If you implement `Dispose` in a custom type, make sure to also implement the `IDisposable` interface.
 - Extend generated code by writing additional logic in a separate `partial class` file.
+
+## Changelog
+
+### 1.4.0
+- A JSON file is now generated on every Generate so that the spreadsheet data used by the client can be used by servers or third-party programs.
+  - Output path: `Assets/GsheetExport/GsheetData.json` (see [JSON Export](#json-export-server--third-party-integration))
 
 ## Sample Sheet
 The project's default configuration points to the following sample Google Sheet.

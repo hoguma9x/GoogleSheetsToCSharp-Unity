@@ -39,13 +39,13 @@ Sheet ID는 Google Sheets URL의 `/d/{spreadsheetId}/` 부분이다. README의 �
 | `Tools/- Gsheet -/GsheetSetting` | 현재 구현의 설정 창 열기 |
 | `Tools/- Gsheet -/View Log-Diff` | 생성 전후 데이터 차이 확인 |
 
-README의 `View Setting`은 현재 소스에서 `GsheetSetting`으로 등록되어 있다. 자동화할 때 설치된 버전의 `MenuItem`을 확인한다.
+자동화할 때 설치된 버전의 `MenuItem`을 확인한다.
 
 생성 흐름은 시트 이름·gid 갱신 → CSV 다운로드 → 헤더 해석 → 바이너리 저장 → C# 생성 → AssetDatabase 갱신이다. 생성 시 다음 산출물을 함께 확인한다.
 
 - `Assets/Resources/GsheetData.bytes`
 - `Assets/GsheetExport/GsheetData.json` — 타 플랫폼/백엔드용. 바이너리와 같은 파서로 해석한 값을 `version`, `sheets.{SheetName}.{kind, collection, fields, data}` 구조로 기록한다. 구현은 [GsheetJsonExporter.cs](Editor/Generator/GsheetJsonExporter.cs).
-- `Assets/{Code Generation Path}/Gsheet.cs`와 `{SheetName}.cs` — 기본 경로는 `Assets/Scripts/Generator`. README는 파일명을 `GSheet.cs`로 표기하지만 현재 생성기는 `Gsheet.cs`를 쓴다.
+- `Assets/{Code Generation Path}/Gsheet.cs`와 `{SheetName}.cs` — 기본 경로는 `Assets/Scripts/Generator`.
 - 로컬라이징 언어 열을 변경했다면 `LangCode.cs`
 
 Editor 코드에서 실행할 필요가 있으면 `SheetData.Editor.Generator.GsheetGenerator.Run(SheetDataSettingScriptable.Instance)`가 반환하는 Task를 기다린다. `Menu_Generate()`는 내부 Task를 기다리지 않고 반환한다. `Run`도 예외를 로그로 처리하므로 호출 반환만으로 성공을 판단하지 않는다.

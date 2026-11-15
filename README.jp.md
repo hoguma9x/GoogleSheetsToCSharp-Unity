@@ -5,6 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 ![.NET Standard 2.1](https://img.shields.io/badge/.NET%20Standard-2.1-orange)
 ![.NET](https://img.shields.io/badge/.NET-8.0%2B-blueviolet)
+![Version](https://img.shields.io/badge/version-1.4.0-blue)
 
 GSheet は、Google スプレッドシートで作成した企画データを Unity ですぐに使用できる C# 型とバイナリデータに変換するプラグインです。
 Google スプレッドシートで作業したデータはエディタとランタイムの両方で使用できます。
@@ -38,6 +39,8 @@ Google スプレッドシートをベースに企画データを管理し、Unit
    - Google スプレッドシートを活用したローカライズ機能をサポート
    - `TextMeshProLocalizeUGUI` TextMeshPro への多言語サポートとフォントマッピング機能を提供
    - `LocalizeString` 現在設定されている言語に合わせて文字列を返す機能を提供
+7. __JSON エクスポート（1.4.0）__
+   - クライアントで使用するシートデータをサーバーやサードパーティ製プログラムで活用できるよう、Generate のたびに JSON ファイルを生成
 
 ## 設定方法
 <img width="650" height="505" alt="image" src="https://github.com/user-attachments/assets/d3fee405-affa-4ab1-949e-aab4ed5c0835" />
@@ -142,7 +145,7 @@ public static List<Unit> Unit => Instance._Unit;
 - `IParserFormatter` または `IGSheetParser` でパース方法を提供したカスタム型
 - `ILwSerializable` でバイナリシリアライズが可能なユーザー定義型
 
-配列と NativeArray は内部文字列を `StringArray.Convert` で分解し、各要素型のフォーマッタで再パースします。
+配列と NativeArray は内部文字列を `GSheetHelper.Convert` で分解し、各要素型のフォーマッタで再パースします。
 
 ## 生成の実行
 
@@ -150,16 +153,17 @@ Unity の上部メニューから以下の項目を使用できます。
 
 | メニュー | 説明 |
 | --- | --- |
-| `Tools/- Gsheet -/Generate` | Google スプレッドシートのダウンロード、バイナリ保存、コード生成を実行します。 |
+| `Tools/- Gsheet -/Generate` | Google スプレッドシートのダウンロード、バイナリ・JSON 保存、コード生成を実行します。 |
 | `Tools/- Gsheet -/View GoogleSheet` | 現在設定されている Google スプレッドシートをブラウザで開きます。 |
-| `Tools/- Gsheet -/View Setting` | `GsheetSetting` インスペクターウィンドウを開きます。 |
+| `Tools/- Gsheet -/GsheetSetting` | `GsheetSetting` インスペクターウィンドウを開きます。 |
 | `Tools/- Gsheet -/View Log-Diff` | 生成前後のデータ差分を確認する Diff Viewer を開きます。 |
 
 生成に成功すると、以下のファイルが更新されます。
 
 ```text
 Assets/Resources/GsheetData.bytes
-Assets/Scripts/Generator/GSheet.cs
+Assets/GsheetExport/GsheetData.json
+Assets/Scripts/Generator/Gsheet.cs
 Assets/Scripts/Generator/{SheetName}.cs
 ```
 
@@ -201,6 +205,55 @@ Gsheet.UI_OK
 
 Unity で生成したデータは、[DotNet~ 共通ライブラリ](DotNet~/README.md)を通じて .NET 8 以降でも読み込めます。更新したテンプレートで C# コードを再生成し、同時に生成したコードと `.bytes` ファイルをサーバーと共有してください。サーバーでは `DotNet~/Gsheets.Core/Gsheets.Core.csproj` を参照し、`Gsheet.LoadFromFile(path)` または `LoadFromBytes(data)` が返すインスタンスを使用します。既存の Unity の `Gsheet.Instance` / Resources による読み込みは維持されます。LWSerializer のビルド設定、Unity 型の対応、カスタム型の条件、ASP.NET Core DI の例はリンク先のガイドを参照してください。
 
+## JSON エクスポート（サーバー / サードパーティ連携）
+
+1.4.0 から、クライアントで使用するシートデータをサーバーやサードパーティ製プログラムで活用できるよう、Generate のたびにバイナリと一緒に `Assets/GsheetExport/GsheetData.json` が生成されます。
+
+- セルの値はバイナリと同じパーサーで解析されるため、`.bytes` と同じ値になります。
+- `Resources` フォルダの外に保存されるため、ゲームビルドには含まれません。
+- UTF-8（BOM なし）で保存され、追加ライブラリなしで一般的な JSON パーサーで読み込めます。
+
+```json
+{
+  "version": 1,
+  "generatedAt": "2026-11-15T12:00:00Z",
+  "sheets": {
+    "ExampleStruct": {
+      "kind": "struct",
+      "collection": "dictionary",
+      "fields": [ { "name": "name", "type": "string" }, { "name": "hp", "type": "int" } ],
+      "data": {
+        "unit_100": { "name": "Soldier", "hp": 100 },
+        "unit_101": { "name": "Archer", "hp": 70 }
+      }
+    }
+  }
+}
+```
+
+| キー | 説明 |
+| --- | --- |
+| `version` | JSON フォーマットのバージョンです。 |
+| `generatedAt` | 生成日時（UTC、ISO 8601）です。 |
+| `sheets.{シート名}.kind` | A1 セルのキーワード（`class` / `struct` / `external`）です。 |
+| `sheets.{シート名}.collection` | `dictionary` の場合 `data` はキーとオブジェクトのマップ、`list` の場合はオブジェクトの配列です。 |
+| `sheets.{シート名}.fields` | 先頭行で宣言したフィールド名と型文字列です。 |
+| `sheets.{シート名}.data` | 実際のデータです。 |
+
+型ごとの JSON 表現は以下の通りです。
+
+| シートの型 | JSON の値 |
+| --- | --- |
+| プリミティブ型（`int`、`float`、`bool` など） | 数値 / 真偽値（`NaN`、`Infinity` は `null`） |
+| `string`、`FixedString*Bytes` | 文字列 |
+| enum | 名前の文字列 |
+| 配列、`NativeArray<T>` | 配列 |
+| `Vector2` / `Vector3` / `Vector2Int` / `Vector3Int` | `{"x", "y"(, "z")}` オブジェクト |
+| `Color` | `{"r", "g", "b", "a"}` オブジェクト（0〜1） |
+| カスタム型 | public フィールドで構成されたオブジェクト |
+
+`long` / `ulong` の値は JSON の数値として記録されるため、JavaScript などでは 2^53 を超える値の精度が失われる場合があります。
+
 ## ローカライズの使用方法
 
 `GsheetSetting.asset` の `Localize Setting / Sheet Name` にローカライズシート名を指定します。現在のサンプル設定では `Localize` シートを使用しています。
@@ -218,8 +271,8 @@ ui_cancel,Cancel,취소,キャンセル
 コードで言語を変更するには `LocalizeManager` を使用します。
 
 ```csharp
-using SheetData;
-using SheetData.Localize;
+using Gsheets;
+using Gsheets.Localize;
 
 LocalizeManager.Instance.SetLanguage(LangCode.KR);
 ```
@@ -238,8 +291,8 @@ string text = LocalizeManager.Instance.Localize(Gsheet.UI_OK);
 
 ```csharp
 using LWSerializer;
-using SheetData.IO;
-using SheetData.Scripts.Parsing;
+using Gsheets.IO;
+using Gsheets.Parsing;
 
 public class CustomClass : IGSheetParser
 {
@@ -248,7 +301,7 @@ public class CustomClass : IGSheetParser
 
     public object ToData(string content)
     {
-        var datas = StringArray.Convert(content);
+        var datas = GSheetHelper.Convert(content);
         return new CustomClass
         {
             _unitName = datas[0],
@@ -256,7 +309,7 @@ public class CustomClass : IGSheetParser
         };
     }
 
-    public void Write(string content, SheetBinaryWriter writer)
+    public void Write(string content, GSheetBinaryWriter writer)
     {
         writer.Write((CustomClass)ToData(content));
     }
@@ -284,7 +337,7 @@ public class MyTargetTypeFormatter : IParserFormatter
         // 文字列を MyTargetType に変換
     }
 
-    public void Write(string content, SheetBinaryWriter writer)
+    public void Write(string content, GSheetBinaryWriter writer)
     {
         writer.Write((MyTargetType)ToData(content));
     }
@@ -299,8 +352,9 @@ public class MyTargetTypeFormatter : IParserFormatter
 4. 各シートを CSV としてダウンロードします。
 5. 先頭行のヘッダーを読み込んで型情報を解析します。
 6. シートデータを `Assets/Resources/GsheetData.bytes` にバイナリとして保存します。
-7. `Assets/Scripts/Generator` 以下にシートごとの型と `Gsheet.cs` を生成します。
-8. ランタイムでは `Gsheet` シングルトンが `Resources.Load<TextAsset>` でバイナリを読み込みデータを復元します。
+7. 同じデータをサーバー・サードパーティ向けに `Assets/GsheetExport/GsheetData.json` として保存します。
+8. `Assets/Scripts/Generator` 以下にシートごとの型と `Gsheet.cs` を生成します。
+9. ランタイムでは `Gsheet` シングルトンが `Resources.Load<TextAsset>` でバイナリを読み込みデータを復元します。
 
 ## 変更点の確認
 <img width="525" height="735" alt="image" src="https://github.com/user-attachments/assets/8cfa128d-3d28-4636-9c72-6e311006af0b" />
@@ -312,6 +366,12 @@ public class MyTargetTypeFormatter : IParserFormatter
 - Google スプレッドシートはエディタからアクセス可能な公開設定または権限設定が必要です。（リンクを知っているユーザーへの共有を推奨します）
 - `NativeArray<T>`・`NativeReference<T>` のように Dispose が必要なフィールドは、生成型の `Dispose()` でクリーンアップされます。ユーザー定義型で Dispose を実装する場合は、必ず `IDisposable` インターフェースを実装してください。
 - 生成コードは partial クラスを別ファイルに記述して拡張してください。
+
+## 更新履歴
+
+### 1.4.0
+- クライアントで使用するスプレッドシートデータをサーバーやサードパーティ製プログラムで活用するため、Generate のたびに JSON ファイルを生成するよう修正しました。
+  - 出力パス：`Assets/GsheetExport/GsheetData.json`（[JSON エクスポート](#json-エクスポートサーバー--サードパーティ連携) を参照）
 
 ## サンプルシート
 プロジェクトのデフォルト設定には、以下のサンプル用 Google スプレッドシートが設定されています。
