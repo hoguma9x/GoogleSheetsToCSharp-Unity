@@ -17,9 +17,7 @@ namespace Gsheets
     {
         public const string GeneratorAssemblyName = "Assembly-CSharp";
         public const string FileName = "GsheetSetting";
-        public const string BinaryFileName = "GsheetData";
-        /// <summary> 타 플랫폼/백엔드용 JSON 출력 폴더 (Assets 기준, Resources 밖이라 빌드에 포함되지 않음) </summary>
-        public const string JsonExportDirectory = "GsheetJSONExport";
+        public const string BinaryFileName = "GsheetData_ExportJson";
         public const string AnnotationText = "//";
         private readonly Regex SheetIdRegex = new Regex(@"/d/([a-zA-Z0-9-_]+)", RegexOptions.Compiled);
         
