@@ -65,7 +65,7 @@ namespace Gsheets.Editor.Generator
 
                 EditorUtility.DisplayProgressBar(ProgressTitle, "Save Json Data", 0.8f);
                 string jsonPath = IOUtils.GetSystemPath(
-                    $"{GSheetSettingScriptable.BinaryFileName}.json");
+                    $"{GSheetSettingScriptable.JsonBinaryFileName}.json");
                 byte[] jsonBytes = new UTF8Encoding(false).GetBytes(GsheetJsonExporter.Build(sheetDatas));
                 IOUtils.SaveFile(jsonPath, jsonBytes);
                 Debug.Log($"json {jsonBytes.Length:N0} bytes -> {jsonPath}");

@@ -17,7 +17,8 @@ namespace Gsheets
     {
         public const string GeneratorAssemblyName = "Assembly-CSharp";
         public const string FileName = "GsheetSetting";
-        public const string BinaryFileName = "GsheetData_ExportJson";
+        public const string BinaryFileName = "GsheetData";
+        public const string JsonBinaryFileName = "GsheetData_ExportJson";
         public const string AnnotationText = "//";
         private readonly Regex SheetIdRegex = new Regex(@"/d/([a-zA-Z0-9-_]+)", RegexOptions.Compiled);
         
