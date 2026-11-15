@@ -52,7 +52,6 @@ namespace Gsheets.Editor.Generator
     public class GSheetTemplate
     {
         public const string Template_Class = @"using System;
-using UnityEngine;
 using System.Collections.Generic;
 using Gsheets.IO;
 using Gsheets;
@@ -63,9 +62,9 @@ using {{ us }};
 
 namespace {{ namespace_name }}
 {
-    public partial class {{ class_name }} : ILwSerializable
+    public partial class {{ class_name }} : ILwSerializable, IDisposable
     {
-        private static {{ class_name }} _instance;
+        private static {{ class_name }} _instance = null;
         {{~ for prop in members ~}}
         public {{ prop.type }} _{{ prop.name }};
         {{~ end ~}}
@@ -79,10 +78,14 @@ namespace {{ namespace_name }}
             {
                 if (_instance == null)
                 {
+#if UNITY_5_3_OR_NEWER
                     _instance = new {{ class_name }}();
                     _instance.Load();
                     _instance.Initialize();
                     GSheetSettingScriptable.Instance.GsheetReLoadFunc = _instance.Load;
+#else
+                    throw new InvalidOperationException(""Use LoadFromFile or LoadFromBytes and keep the returned instance."");
+#endif
                 }
                 return _instance;
             }
@@ -95,6 +98,7 @@ namespace {{ namespace_name }}
 #endif
         }
 
+#if UNITY_5_3_OR_NEWER
         private void Load()
         {
             //Dispose
@@ -105,12 +109,47 @@ namespace {{ namespace_name }}
             if(reader == null)
                 return;
             
-            //Read Data
+            using (reader)
+                Load(reader);
+        }
+#endif
+
+        public static {{ class_name }} LoadFromFile(string path)
+        {
+            using (var reader = GSheetBinaryReader.FromFile(path))
+                return LoadFromReader(reader);
+        }
+
+        public static {{ class_name }} LoadFromBytes(byte[] data)
+        {
+            using (var reader = GSheetBinaryReader.FromBytes(data))
+                return LoadFromReader(reader);
+        }
+
+        private static {{ class_name }} LoadFromReader(GSheetBinaryReader reader)
+        {
+            var result = new {{ class_name }}();
+            try
+            {
+                result.Load(reader);
+                return result;
+            }
+            catch
+            {
+                result.Dispose();
+                throw;
+            }
+        }
+
+        private void Load(GSheetBinaryReader reader)
+        {
             reader.Read(out int sheetCount);
+            if (sheetCount != {{ members.size }})
+                throw new System.IO.InvalidDataException(""GSheet schema does not match the generated code. Regenerate code and data together."");
             {{~ for prop in members ~}}
-            _{{ prop.name }} = GSheetHelper.ReadSheet<{{ prop.type }}>(reader);
+            _{{ prop.name }} = GSheetHelper.ReadSheet<{{ prop.type }}>(reader,
+                name => name == nameof({{ prop.name }}) ? typeof({{ prop.name }}) : null);
             {{~ end ~}}
-            reader.Dispose();
         }
 
         public void OnNativeWrite(LwBinaryWriter writer)
@@ -127,7 +166,7 @@ namespace {{ namespace_name }}
             {{~ end ~}}
         }
         
-        private void Dispose()
+        public void Dispose()
         {
             {{~ for prop in members ~}}
             {{~ if !prop.is_external ~}}

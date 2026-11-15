@@ -35,8 +35,9 @@ namespace Gsheets.Editor.Generator
                 Members.Add(new  MemberModel(typeData));
             }
 
-            namespaceChain.Add(typeof(SerializeField).Namespace);
             namespaceChain.Remove(null);
+            namespaceChain.Remove("System");
+            namespaceChain.Remove("LWSerializer");
             NamespaceName = nameSpace;
             TypeKeyword = data.TypeKeyword;
             TypeName = data.SheetName;
@@ -61,9 +62,19 @@ namespace Gsheets.Editor.Generator
     public class TypeModelTemplate
     {
         public const string Template_Class = @"{{~ for us in usings ~}}
+{{~ if us == ""UnityEngine"" || us == ""Unity.Collections"" ~}}
+#if UNITY_5_3_OR_NEWER
+using {{ us }};
+#endif
+{{~ else ~}}
 using {{ us }};
 {{~ end ~}}
+{{~ end ~}}
+using System;
 using LWSerializer;
+#if !UNITY_5_3_OR_NEWER
+using Gsheets.Compatibility;
+#endif
 
 namespace {{ namespace_name }}
 {
@@ -71,11 +82,20 @@ namespace {{ namespace_name }}
     public partial {{ type_keyword }} {{ type_name }} : ILwSerializable, IDisposable
     {
         {{~ for prop in members ~}}
-        [SerializeField] private {{ prop.type }} _{{ prop.name }};
+#if UNITY_5_3_OR_NEWER
+        [UnityEngine.SerializeField]
+        private {{ prop.type }} _{{ prop.name }};
+#else
+        private {{ prop.portable_type }} _{{ prop.name }};
+#endif
         {{~ end ~}}
 
         {{~ for prop in members ~}}
+#if UNITY_5_3_OR_NEWER
         public {{ prop.type }} {{ prop.name }} => _{{ prop.name }};
+#else
+        public {{ prop.portable_type }} {{ prop.name }} => _{{ prop.name }};
+#endif
         {{~ end ~}}
 
         void ILwSerializable.OnNativeWrite(LwBinaryWriter writer)
@@ -94,12 +114,14 @@ namespace {{ namespace_name }}
 
         public void Dispose()
         {
+#if UNITY_5_3_OR_NEWER
             {{~ for prop in members ~}}
             {{~ if prop.header_type.is_disposable ~}}
             if({{ prop.name }}.IsCreated)
                 {{ prop.name }}.Dispose();
             {{~ end ~}}
             {{~ end ~}}
+#endif
         }
     }
 }

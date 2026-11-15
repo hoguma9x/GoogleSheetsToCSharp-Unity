@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using LWSerializer;
-using UnityEngine;
 
 namespace Gsheets.IO
 {
@@ -12,13 +12,21 @@ namespace Gsheets.IO
         //WriteDirect 참조
         public static object ReadSheet(GSheetBinaryReader reader)
         {
+            return ReadSheet(reader, TypeFinder.Find);
+        }
+
+        public static object ReadSheet(GSheetBinaryReader reader, Func<string, Type> resolveType)
+        {
             List<object> list = new();
             Dictionary<string, ILwSerializable> dic = new();
             reader.Read(out GSheetInfo info);
+            if (info.DataCount < 0) throw new InvalidDataException("Negative GSheet row count.");
+            var type = resolveType(info.SheetName);
+            if (type == null || !typeof(ILwSerializable).IsAssignableFrom(type))
+                throw new InvalidDataException($"Sheet '{info.SheetName}' requires a registered ILwSerializable type.");
             for (int j = 0; j < info.DataCount; j++)
             {
-                var type = info.GetSheetType();
-                var instance = Activator.CreateInstance(info.GetSheetType());
+                var instance = Activator.CreateInstance(type);
                 if (instance is ILwSerializable serializable)
                 {
                     if (info.IsDictionary)
@@ -35,7 +43,7 @@ namespace Gsheets.IO
                 }
                 else
                 {
-                    Debug.LogError("SheetType 에 해당하는 형식은 ILwSerializable가 구현되어야합니다");
+                    throw new InvalidDataException($"Sheet '{info.SheetName}' does not implement ILwSerializable.");
                 }
             }
             reader.ReadPadding(32);
@@ -44,7 +52,12 @@ namespace Gsheets.IO
         
         public static T ReadSheet<T>(GSheetBinaryReader reader)
         {
-            var sheetResult = ReadSheet(reader);
+            return ReadSheet<T>(reader, TypeFinder.Find);
+        }
+
+        public static T ReadSheet<T>(GSheetBinaryReader reader, Func<string, Type> resolveType)
+        {
+            var sheetResult = ReadSheet(reader, resolveType);
             var targetType = typeof(T);
             
             if (typeof(IList).IsAssignableFrom(targetType))
@@ -94,13 +107,13 @@ namespace Gsheets.IO
                 {
                     // 괄호 밖(depth == 0)에서 쉼표를 만났을 때만 분리
                     string segment = content.Substring(startIndex, i - startIndex);
-                    result.Add(segment);
+                    result.Add(segment.Trim());
                     startIndex = i + 1; // 다음 시작 위치 갱신
                 }
             }
             if (startIndex < content.Length)
             {
-                result.Add(content.Substring(startIndex));
+                result.Add(content.Substring(startIndex).Trim());
             }
             else if (content.EndsWith(","))
             {

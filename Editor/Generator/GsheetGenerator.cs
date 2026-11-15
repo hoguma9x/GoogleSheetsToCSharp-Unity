@@ -62,7 +62,14 @@ namespace Gsheets.Editor.Generator
                 Debug.Log($"size {writerSize}");
                 writer.Save();
                 writer.Dispose();
-                
+
+                EditorUtility.DisplayProgressBar(ProgressTitle, "Save Json Data", 0.8f);
+                string jsonPath = IOUtils.GetSystemPath(
+                    $"{GSheetSettingScriptable.JsonExportDirectory}/{GSheetSettingScriptable.BinaryFileName}.json");
+                byte[] jsonBytes = new UTF8Encoding(false).GetBytes(GsheetJsonExporter.Build(sheetDatas));
+                IOUtils.SaveFile(jsonPath, jsonBytes);
+                Debug.Log($"json {jsonBytes.Length:N0} bytes -> {jsonPath}");
+
                 EditorUtility.DisplayProgressBar(ProgressTitle, "Generating Cshape Script", 0.9f);
                 foreach (var sheetData in sheetDatas)
                 {

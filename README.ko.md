@@ -198,6 +198,10 @@ Gsheet.UNIT_100
 Gsheet.UI_OK
 ```
 
+## ASP.NET Core / 공통 런타임
+
+Unity에서 생성한 데이터는 [DotNet~ 공통 라이브러리](DotNet~/README.md)를 통해 .NET 8 이상에서도 읽을 수 있습니다. 업데이트된 템플릿으로 C# 코드를 다시 생성하고, 생성 코드와 같은 시점의 `.bytes` 파일을 서버와 공유하세요. 서버에서는 `DotNet~/Gsheets.Core/Gsheets.Core.csproj`를 참조하고 `Gsheet.LoadFromFile(path)` 또는 `LoadFromBytes(data)`가 반환한 인스턴스를 사용합니다. 기존 Unity의 `Gsheet.Instance` / Resources 로딩은 유지됩니다. LWSerializer 빌드 설정, Unity 타입 대응, 커스텀 타입 조건 및 ASP.NET Core DI 예제는 연결된 가이드를 참고하세요.
+
 ## 로컬라이징 사용법
 
 `GsheetSetting.asset`의 `Localize Setting / Sheet Name`에 로컬라이징 시트 이름을 지정합니다. 현재 예제 설정은 `Localize` 시트를 사용합니다.

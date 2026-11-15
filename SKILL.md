@@ -44,12 +44,17 @@ README의 `View Setting`은 현재 소스에서 `GsheetSetting`으로 등록되�
 생성 흐름은 시트 이름·gid 갱신 → CSV 다운로드 → 헤더 해석 → 바이너리 저장 → C# 생성 → AssetDatabase 갱신이다. 생성 시 다음 산출물을 함께 확인한다.
 
 - `Assets/Resources/GsheetData.bytes`
+- `Assets/GsheetExport/GsheetData.json` — 타 플랫폼/백엔드용. 바이너리와 같은 파서로 해석한 값을 `version`, `sheets.{SheetName}.{kind, collection, fields, data}` 구조로 기록한다. 구현은 [GsheetJsonExporter.cs](Editor/Generator/GsheetJsonExporter.cs).
 - `Assets/{Code Generation Path}/Gsheet.cs`와 `{SheetName}.cs` — 기본 경로는 `Assets/Scripts/Generator`. README는 파일명을 `GSheet.cs`로 표기하지만 현재 생성기는 `Gsheet.cs`를 쓴다.
 - 로컬라이징 언어 열을 변경했다면 `LangCode.cs`
 
 Editor 코드에서 실행할 필요가 있으면 `SheetData.Editor.Generator.GsheetGenerator.Run(SheetDataSettingScriptable.Instance)`가 반환하는 Task를 기다린다. `Menu_Generate()`는 내부 Task를 기다리지 않고 반환한다. `Run`도 예외를 로그로 처리하므로 호출 반환만으로 성공을 판단하지 않는다.
 
 생성 후 Console 오류, 컴파일 결과, 설정 Inspector의 `LastUpdateInfo`, 산출물 변경과 Diff Viewer를 함께 확인한다. `IDisposable` 구현 객체(예: NativeArray)는 Diff Viewer의 비교 대상에서 제외되므로 표시가 없다고 값이 같다고 판단하지 않는다.
+
+## ASP.NET Core / 공통 런타임
+
+[DotNet~/README.md](DotNet~/README.md)의 빌드·타입 호환 절차를 따른다. `DotNet~/Gsheets.Core/Gsheets.Core.csproj`는 Unity와 같은 IO 소스를 .NET 8용으로 빌드한다. LWSerializer는 Unity에서 사용하는 것과 같은 리비전의 `Source` 경로를 `LWSerializerSource`로 전달한다. 서버에서는 재생성한 모델과 같은 시점의 `.bytes` 파일을 배포하고 `Gsheet.LoadFromFile` / `LoadFromBytes`의 반환 인스턴스 또는 명시적 타입 목록을 받는 `GSheetData`를 사용한다. 서버의 `Gsheet.Instance`는 자동 로드하지 않는다. 커스텀·external 타입의 Editor 전용 파서와 런타임 직렬화 계약은 분리한다. 검증 스크립트는 `DotNet~/Tests/Verify.ps1`이다.
 
 ## 런타임 조회와 확장
 

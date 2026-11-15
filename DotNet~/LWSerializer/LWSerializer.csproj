@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LangVersion>9.0</LangVersion>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(LWSerializerSource)/**/*.cs" Exclude="$(LWSerializerSource)/Formatters/Unity/**/*.cs" Condition="'$(LWSerializerSource)' != ''" />
+    <Compile Include="UnityFormatterNamespace.cs" />
+    <PackageReference Include="System.IO.Hashing" Version="8.0.0" />
+  </ItemGroup>
+  <Target Name="CheckSerializerSource" BeforeTargets="PrepareForBuild">
+    <Error Condition="!Exists('$(LWSerializerSource)/LwBinaryReader.cs')" Text="Set LWSerializerSource to the Source directory of the same LWSerializer revision used by Unity (dotnet build -p:LWSerializerSource=/path/to/LWSerializer/Source)." />
+  </Target>
+</Project>

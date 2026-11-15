@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LangVersion>9.0</LangVersion>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../LWSerializer/LWSerializer.csproj" />
+    <Compile Include="../../Scripts/IO/GSheetBinaryReader.cs" />
+    <Compile Include="../../Scripts/IO/GSheetInfo.cs" />
+    <Compile Include="../../Scripts/IO/GSheetHelper.cs" />
+    <Compile Include="../../Scripts/IO/GSheetData.cs" />
+    <Compile Include="../../Scripts/IO/PortableUnityTypes.cs" />
+    <Compile Include="../../Scripts/TypeFinder.cs" />
+  </ItemGroup>
+</Project>

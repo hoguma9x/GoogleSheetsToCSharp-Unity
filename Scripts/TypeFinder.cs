@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+#if UNITY_5_3_OR_NEWER
 using Unity.Collections;
 using UnityEngine;
+#endif
 using Assembly = System.Reflection.Assembly;
 
 namespace Gsheets
@@ -33,6 +35,7 @@ namespace Gsheets
             {"bool", typeof(bool)},
             {"bool[]", typeof(bool[])},
             
+#if UNITY_5_3_OR_NEWER
             {"Vector2", typeof(Vector2)},
             {"Vector2[]", typeof(Vector2[])},
             {"Vector2Int", typeof(Vector2Int)},
@@ -46,6 +49,7 @@ namespace Gsheets
             {"Quaternion[]", typeof(Quaternion[])},
             {"NativeArray`1", typeof(NativeArray<>)},
             {"Color", typeof(Color)},
+#endif
         };
         
         private static void RefreshAssemblies()
@@ -68,7 +72,7 @@ namespace Gsheets
                                 targetStr.Contains("Unity.Collections") ||
                                 targetStr.Contains($"{nameof(Gsheets)}") ||
                                 targetStr.Contains($"{nameof(Gsheets)}.Editor");
-#else
+#elif UNITY_5_3_OR_NEWER
                 bool isTarget = false;
                 foreach (var referencedAssembly in GSheetSettingScriptable.Instance.ReferencedAssemblies)
                 {
@@ -78,6 +82,8 @@ namespace Gsheets
                         break;
                     }
                 }      
+#else
+                bool isTarget = true;
 #endif
                 if (isTarget)
                     _assemblies.Add(assembly);

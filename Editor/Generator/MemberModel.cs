@@ -14,6 +14,9 @@ namespace Gsheets.Editor.Generator
     public class MemberModel
     {
         public string Type { get; set; }
+        public string PortableType => System.Text.RegularExpressions.Regex.Replace(
+            System.Text.RegularExpressions.Regex.Replace(Type, @"(?:Unity\.Collections\.)?NativeArray<([^<>]+)>", "$1[]"),
+            @"(?:Unity\.Collections\.)?NativeReference<([^<>]+)>", "$1");
         public string Name { get; set; }
         public HeaderType HeaderType { get; set; }
         public bool IsExternal { get; set; }

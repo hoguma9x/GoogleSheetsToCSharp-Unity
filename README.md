@@ -196,6 +196,10 @@ Gsheet.UNIT_100
 Gsheet.UI_OK
 ```
 
+## ASP.NET Core / Shared Runtime
+
+Unity-generated data can also be read by the .NET 8+ common library in [DotNet~](DotNet~/README.md). Regenerate the C# sources with the updated templates, share those sources and the matching `.bytes` file, and reference `DotNet~/Gsheets.Core/Gsheets.Core.csproj` from your server. Use `Gsheet.LoadFromFile(path)` / `LoadFromBytes(data)` and keep the returned instance; Unity's existing `Gsheet.Instance` / Resources workflow remains available. See the linked guide for LWSerializer configuration, portable Unity field types, custom contracts and ASP.NET Core DI examples.
+
 ## Localization Usage
 
 Specify the localization sheet name in `Localize Setting / Sheet Name` within `GsheetSetting.asset`. The current sample configuration uses the `Localize` sheet.
